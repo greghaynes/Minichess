@@ -46,12 +46,16 @@ class Board
 		Board(void);
 		Board(const Board &other);
 
-		BoardSlot &get(const Location &l) const;
+		const BoardSlot &get(const Location &l) const;
 		void set(const Location &l, const BoardSlot &p);
+
+		void move(const Location &src, const Location &dest);
 
 		const BoardSlot *board(void) const;
 
 	private:
+		int locationToNdx(const Location &l) const;
+
 		BoardSlot m_board[CFG_BOARD_WIDTH*CFG_BOARD_HEIGHT];
 
 };
