@@ -2,6 +2,12 @@
 
 #include <string.h>
 
+BoardSlot::BoardSlot(Player::Who owner, Piece::Type piece)
+	: m_piece(piece)
+	, m_owner(owner)
+{
+}
+
 Board::Board(void)
 {
 }
