@@ -11,14 +11,13 @@ Board *BoardGenerator::fromString(const char *str)
 
 	const char *itr;
 	char ch;
-	int ndx;
 	int x, y;
 	Piece::Type piece;
 	Player::Who player;
-	for(itr = str, ndx = 0;*itr;++itr,++ndx)
+	for(itr = str, x = 0, y = 0;*itr;++itr,++x)
 	{
 		ch = tolower(*itr);
-		switch(*itr)
+		switch(ch)
 		{
 			case 'p':
 				piece = Piece::Pawn;
@@ -29,6 +28,9 @@ Board *BoardGenerator::fromString(const char *str)
 			case 'n':
 				piece = Piece::Knight;
 				break;
+			case 'b':
+				piece = Piece::Bishop;
+				break;
 			case 'q':
 				piece = Piece::Queen;
 				break;
@@ -38,7 +40,8 @@ Board *BoardGenerator::fromString(const char *str)
 			case '.':
 				continue;
 			default:
-				ndx--;
+				x=-1;
+				++y;
 				continue;
 		}
 
@@ -47,10 +50,20 @@ Board *BoardGenerator::fromString(const char *str)
 		else
 			player = Player::Player2;
 
-		x = ndx % CFG_BOARD_WIDTH;
-		y = ndx / CFG_BOARD_HEIGHT;
-
 		b->set(Location(x, y), BoardSlot(player, piece));
 	}
+
+	return b;
+}
+
+Board *BoardGenerator::matchStart(void)
+{
+	return BoardGenerator::fromString(
+		"kqbnr\n"
+		"ppppp\n"
+		".....\n"
+		".....\n"
+		"PPPPP\n"
+		"RNBQK\n");
 }
 

@@ -2,6 +2,7 @@
 #include "boardslot.h"
 #include "config.h"
 #include "location.h"
+#include "boardgenerator.h"
 
 #include <iostream>
 
@@ -22,10 +23,10 @@ void printBoardSlot(const BoardSlot &bs)
 			std::cout << "B";
 			break;
 		case Piece::Knight:
-			std::cout << "K";
+			std::cout << "N";
 			break;
 		case Piece::King:
-			std::cout << "!";
+			std::cout << "K";
 			break;
 		case Piece::Queen:
 			std::cout << "Q";
@@ -48,9 +49,7 @@ void printBoard(const Board &b)
 
 int main(int argc, char **argv)
 {
-	Board b;
-	b.set(Location(0, 0), BoardSlot(Player::Player1, Piece::Queen));
-	printBoard(b);
+	printBoard(*BoardGenerator::matchStart());
 
 	return 0;
 }

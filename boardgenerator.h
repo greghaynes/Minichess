@@ -8,6 +8,7 @@ class BoardGenerator
 
 	public:
 		static Board *fromString(const char *str);
+		static Board *matchStart(void);
 
 };
 
