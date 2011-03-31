@@ -30,7 +30,10 @@ std::vector<Board*> *BoardSlot::validMoves(const Board &b, const Location &loc) 
 				scanMoves(*moves, b, loc, 0, -1, true, 1);
 			break;
 		case Piece::Knight:
-			// !@%^ this one
+			scanMoves(*moves, b, loc, 1, 2, true, 1);
+			scanMoves(*moves, b, loc, 1, -2, true, 1);
+			scanMoves(*moves, b, loc, -1, 2, true, 1);
+			scanMoves(*moves, b, loc, -1, -2, true, 1);
 			break;
 		case Piece::Bishop:
 			// Diags
