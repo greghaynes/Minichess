@@ -6,32 +6,40 @@
 
 #include <iostream>
 
+#include <ctype.h>
+
 void printBoardSlot(const BoardSlot &bs)
 {
+	char ch;
 	switch(bs.piece())
 	{
 		case Piece::None:
-			std::cout << ".";
+			ch = '.';
 			break;
 		case Piece::Pawn:
-			std::cout << "P";
+			ch = 'P';
 			break;
 		case Piece::Rook:
-			std::cout << "R";
+			ch = 'R';
 			break;
 		case Piece::Bishop:
-			std::cout << "B";
+			ch = 'B';
 			break;
 		case Piece::Knight:
-			std::cout << "N";
+			ch = 'N';
 			break;
 		case Piece::King:
-			std::cout << "K";
+			ch = 'K';
 			break;
 		case Piece::Queen:
-			std::cout << "Q";
+			ch = 'Q';
+			break;
+		default:
+			ch = '.';
 	}
-	std::cout << " ";
+	if(bs.owner() == Player::Player1)
+		ch = tolower(ch);
+	std::cout << ch;
 }
 
 void printBoard(const Board &b)
