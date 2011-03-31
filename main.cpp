@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
 	Board b;
-	b.get(Location(6, 0));
+	b.get(Location(0, 0));
 
 	return 0;
 }

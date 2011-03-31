@@ -2,42 +2,10 @@
 #define BOARD_H
 
 #include "config.h"
+#include "boardslot.h"
 #include "location.h"
 
-namespace Player
-{
-	enum Who
-	{
-		None,
-		Player1,
-		Player2
-	};
-}
-
-namespace Piece
-{
-	enum Type
-	{
-		None,
-		Pawn,
-		Rook,
-		Knight,
-		Bishop,
-		Queen,
-		King
-	};
-}
-
-class BoardSlot
-{
-	public:
-		BoardSlot(Player::Who owner=Player::None, Piece::Type piece=Piece::None);
-
-	private:
-		char m_piece;
-		char m_owner;
-};
-
+#include <vector>
 
 class Board
 {
@@ -53,7 +21,12 @@ class Board
 
 		const BoardSlot *board(void) const;
 
+		std::vector<Board*> *validMoves(Player::Who player) const;
+
+		const std::vector<Location> *playerPieces(Player::Who player) const;
+
 	private:
+		bool isValidLocation(const Location &l) const;
 		int locationToNdx(const Location &l) const;
 
 		BoardSlot m_board[CFG_BOARD_WIDTH*CFG_BOARD_HEIGHT];
