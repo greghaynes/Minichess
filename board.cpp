@@ -10,7 +10,11 @@ Board::Board(void)
 
 Board::Board(const Board &other)
 {
-	memcpy(m_board, other.board(), sizeof(BoardSlot)*CFG_BOARD_WIDTH*CFG_BOARD_HEIGHT);
+	memcpy(m_board, &other.get(Location(0, 0)), sizeof(BoardSlot)*CFG_BOARD_WIDTH*CFG_BOARD_HEIGHT);
+}
+
+Board::~Board(void)
+{
 }
 
 const BoardSlot &Board::get(const Location &l) const
@@ -23,7 +27,7 @@ const BoardSlot &Board::get(const Location &l) const
 		throw std::invalid_argument(errmsg);
 	}
 #endif
-	return m_board[locationToNdx(l)];
+	return m_board[l.x()][l.y()];
 }
 
 void Board::set(const Location &l, const BoardSlot &p)
@@ -36,7 +40,7 @@ void Board::set(const Location &l, const BoardSlot &p)
 		throw std::invalid_argument(errmsg);
 	}
 #endif
-	m_board[locationToNdx(l)] = p;
+	m_board[l.x()][l.y()] = p;
 }
 
 void Board::move(const Location &src, const Location &dest)
@@ -45,42 +49,36 @@ void Board::move(const Location &src, const Location &dest)
 	set(src, BoardSlot(Player::None, Piece::None));
 }
 
-const BoardSlot *Board::board(void) const
+std::list<Board*> *Board::validMoves(Player::Who player) const
 {
-	return m_board;
-}
-
-std::vector<Board*> *Board::validMoves(Player::Who player) const
-{
-	const std::vector<Location> *pieces = playerPieces(player);
-	std::vector<Location>::const_iterator piece_itr;
-	std::vector<Board*> *ret = new std::vector<Board*>();
-	std::vector<Board*> *pieceMoves;
-	std::vector<Board*>::iterator pieceMoves_itr;
+	std::list<Location> *pieces = playerPieces(player);
+	std::list<Location>::const_iterator piece_itr;
+	std::list<Board*> *ret = new std::list<Board*>;
+	std::list<Board*> *pieceMoves;
+	std::list<Board*>::iterator pieceMoves_itr;
+	const BoardSlot *piece;
 
 	for(piece_itr = pieces->begin();piece_itr != pieces->end();++piece_itr)
 	{
-		pieceMoves = get(*piece_itr).validMoves(*this, *piece_itr);
-		for(pieceMoves_itr = pieceMoves->begin();pieceMoves_itr != pieceMoves->end();++pieceMoves_itr)
-		{
-			ret->push_back(*pieceMoves_itr);
-		}
+		piece = &get(*piece_itr);
+		pieceMoves = piece->validMoves(*this, *piece_itr);
 		delete pieceMoves;
 	}
+	delete pieces;
 
 	return ret;
 }
 
-const std::vector<Location> *Board::playerPieces(Player::Who player) const
+std::list<Location> *Board::playerPieces(Player::Who player) const
 {
-	std::vector<Location> *ret = new std::vector<Location>();
+	std::list<Location> *ret = new std::list<Location>();
 	int i, j;
 	for(i = 0;i<CFG_BOARD_WIDTH;i++)
 	{
 		for(j = 0;j<CFG_BOARD_HEIGHT;j++)
 		{
 			if(get(Location(i, j)).owner() == player)
-				ret->push_back(Location(i, j));
+				ret->push_front(Location(i, j));
 		}
 	}
 
@@ -90,10 +88,5 @@ const std::vector<Location> *Board::playerPieces(Player::Who player) const
 bool Board::isValidLocation(const Location &l) const
 {
 	return l.x() >= CFG_BOARD_WIDTH || l.y() >= CFG_BOARD_HEIGHT;
-}
-
-int Board::locationToNdx(const Location &l) const
-{
-	return l.x() + (l.y() * CFG_BOARD_WIDTH);
 }
 

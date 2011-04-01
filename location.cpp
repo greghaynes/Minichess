@@ -6,12 +6,12 @@ Location::Location(unsigned char x, unsigned char y)
 {
 }
 
-unsigned char Location::x() const
+signed char Location::x() const
 {
 	return m_x;
 }
 
-unsigned char Location::y() const
+signed char Location::y() const
 {
 	return m_y;
 }

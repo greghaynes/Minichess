@@ -7,12 +7,12 @@ class Location
 	public:
 		Location(unsigned char x, unsigned char y);
 
-		unsigned char x() const;
-		unsigned char y() const;
+		signed char x() const;
+		signed char y() const;
 
 	private:
-		unsigned char m_x;
-		unsigned char m_y;
+		signed char m_x;
+		signed char m_y;
 
 };
 

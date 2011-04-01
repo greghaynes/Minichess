@@ -57,7 +57,19 @@ void printBoard(const Board &b)
 
 int main(int argc, char **argv)
 {
-	printBoard(*BoardGenerator::matchStart());
+	Board b;
+	b.set(Location(0, 0), BoardSlot(Player::Player1, Piece::Bishop));
+
+	std::list<Board*> *moves = b.validMoves(Player::Player1);
+	std::list<Board*>::iterator itr;
+
+	for(itr = moves->begin();itr != moves->end();++itr)
+	{
+		printBoard(**itr);
+		std::cout << "\n";
+		delete *itr;
+	}
+	delete moves;
 
 	return 0;
 }

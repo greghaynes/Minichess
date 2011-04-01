@@ -4,7 +4,7 @@
 #include "config.h"
 #include "location.h"
 
-#include <vector>
+#include <list>
 
 class Board;
 
@@ -17,10 +17,10 @@ class BoardSlot
 		Piece::Type piece(void) const;
 		Player::Who owner(void) const;
 
-		std::vector<Board*> *validMoves(const Board &b, const Location &loc) const;
+		std::list<Board*> *validMoves(const Board &b, const Location &loc) const;
 
 	private:
-		void scanMoves(std::vector<Board*> &vals,
+		void scanMoves(std::list<Board*> *vals,
 								  const Board &b,
 								  const Location &origin,
 								  int dx,
@@ -28,15 +28,15 @@ class BoardSlot
 								  bool can_capture=true,
 								  int max_cnt=0) const;
 
-		void scanMoves(std::vector<Board*> &vals,
+		void scanMoves(std::list<Board*> *vals,
 							  const Board &b,
 							  const Location &origin,
 							  const Location &l,
 							  int dx,
 							  int dy,
 							  int cnt,
-							  bool can_capture,
-							  int max_cnt) const;
+							  bool can_capture=true,
+							  int max_cnt=0) const;
 
 		char m_piece;
 		char m_owner;
