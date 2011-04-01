@@ -108,7 +108,9 @@ void BoardSlot::scanMoves(std::list<Board*> *vals,
                       bool can_capture,
                       int max_cnt) const
 {
-	const BoardSlot *piece = &b.get(l);
+	const BoardSlot *piece = b.get(l);
+	if(!piece)
+		return;
 	if(piece->owner() == m_owner)
 		return;
 	if(piece->owner() == Player::None || can_capture)

@@ -49,7 +49,7 @@ void printBoard(const Board &b)
 	{
 		for(j = 0;j < CFG_BOARD_WIDTH;j++)
 		{
-			printBoardSlot(b.get(Location(j, i)));
+			printBoardSlot(*b.get(Location(j, i)));
 		}
 		std::cout << "\n";
 	}

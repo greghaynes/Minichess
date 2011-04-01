@@ -10,42 +10,30 @@ Board::Board(void)
 
 Board::Board(const Board &other)
 {
-	memcpy(m_board, &other.get(Location(0, 0)), sizeof(BoardSlot)*CFG_BOARD_WIDTH*CFG_BOARD_HEIGHT);
+	memcpy(m_board, other.get(Location(0, 0)), sizeof(BoardSlot)*CFG_BOARD_WIDTH*CFG_BOARD_HEIGHT);
 }
 
 Board::~Board(void)
 {
 }
 
-const BoardSlot &Board::get(const Location &l) const
+const BoardSlot *Board::get(const Location &l) const
 {
-#if CFG_BOARD_SAFE
-	if(isValidLocation(l))
-	{
-		char errmsg[50];
-		sprintf(errmsg, "Invalid location (%u, %u)", l.x(), l.y());
-		throw std::invalid_argument(errmsg);
-	}
-#endif
-	return m_board[l.x()][l.y()];
+	if(!isValidLocation(l))
+		return 0;
+	return &m_board[l.x()][l.y()];
 }
 
 void Board::set(const Location &l, const BoardSlot &p)
 {
-#if CFG_BOARD_SAFE
-	if(isValidLocation(l))
-	{
-		char errmsg[50];
-		sprintf(errmsg, "Invalid location (%u, %u)", l.x(), l.y());
-		throw std::invalid_argument(errmsg);
-	}
-#endif
+	if(!isValidLocation(l))
+		return;
 	m_board[l.x()][l.y()] = p;
 }
 
 void Board::move(const Location &src, const Location &dest)
 {
-	set(dest, get(src));
+	set(dest, *get(src));
 	set(src, BoardSlot(Player::None, Piece::None));
 }
 
@@ -60,8 +48,11 @@ std::list<Board*> *Board::validMoves(Player::Who player) const
 
 	for(piece_itr = pieces->begin();piece_itr != pieces->end();++piece_itr)
 	{
-		piece = &get(*piece_itr);
+		piece = get(*piece_itr);
 		pieceMoves = piece->validMoves(*this, *piece_itr);
+		// Append moves for each piece to ret list
+		for(pieceMoves_itr = pieceMoves->begin();pieceMoves_itr != pieceMoves->end();++pieceMoves_itr)
+			ret->push_front(*pieceMoves_itr);
 		delete pieceMoves;
 	}
 	delete pieces;
@@ -77,7 +68,7 @@ std::list<Location> *Board::playerPieces(Player::Who player) const
 	{
 		for(j = 0;j<CFG_BOARD_HEIGHT;j++)
 		{
-			if(get(Location(i, j)).owner() == player)
+			if(get(Location(i, j))->owner() == player)
 				ret->push_front(Location(i, j));
 		}
 	}
@@ -87,6 +78,8 @@ std::list<Location> *Board::playerPieces(Player::Who player) const
 
 bool Board::isValidLocation(const Location &l) const
 {
-	return l.x() >= CFG_BOARD_WIDTH || l.y() >= CFG_BOARD_HEIGHT;
+	return l.x() >= 0 && l.y() >= 0
+	       && l.x() < CFG_BOARD_WIDTH
+	       && l.y() < CFG_BOARD_HEIGHT;
 }
 

@@ -4,8 +4,6 @@
 #define CFG_BOARD_WIDTH      5
 #define CFG_BOARD_HEIGHT     6
 
-#define CFG_BOARD_SAFE       1
-
 namespace Player
 {
 	enum Who

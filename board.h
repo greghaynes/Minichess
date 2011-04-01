@@ -15,7 +15,7 @@ class Board
 		Board(const Board &other);
 		~Board(void);
 
-		const BoardSlot &get(const Location &l) const;
+		const BoardSlot *get(const Location &l) const;
 		void set(const Location &l, const BoardSlot &p);
 
 		void move(const Location &src, const Location &dest);
