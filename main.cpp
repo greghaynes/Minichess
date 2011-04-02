@@ -59,6 +59,7 @@ int main(int argc, char **argv)
 {
 	Board b;
 	b.set(Location(0, 0), BoardSlot(Player::Player1, Piece::Bishop));
+	b.set(Location(1, 0), BoardSlot(Player::Player1, Piece::Pawn));
 
 	std::list<Board*> *moves = b.validMoves(Player::Player1);
 	std::list<Board*>::iterator itr;

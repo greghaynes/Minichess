@@ -118,10 +118,10 @@ void BoardSlot::scanMoves(std::list<Board*> *vals,
 		Board *new_board = new Board(b);
 		new_board->move(origin, l);
 		vals->push_front(new_board);
-		if(!can_capture)
+		if(piece->owner() == Player::None)
 		{
 			++cnt;
-			if(max_cnt && max_cnt > cnt)
+			if(!max_cnt || max_cnt > cnt)
 				scanMoves(vals,
 				          b,
 				          origin,
