@@ -24,10 +24,13 @@ class Board
 
 		std::list<Location> *playerPieces(Player::Who player) const;
 
+		Player::Who winner(void) const;
+
 	private:
 		bool isValidLocation(const Location &l) const;
 
 		BoardSlot m_board[CFG_BOARD_WIDTH][CFG_BOARD_HEIGHT];
+		Player::Who m_winner;
 
 };
 

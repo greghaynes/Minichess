@@ -5,10 +5,12 @@
 #include <stdexcept>
 
 Board::Board(void)
+	: m_winner(Player::None)
 {
 }
 
 Board::Board(const Board &other)
+	: m_winner(other.winner())
 {
 	memcpy(m_board, other.get(Location(0, 0)), sizeof(BoardSlot)*CFG_BOARD_WIDTH*CFG_BOARD_HEIGHT);
 }
@@ -35,16 +37,31 @@ void Board::move(const Location &src, const Location &dest)
 {
 	set(dest, *get(src));
 	set(src, BoardSlot(Player::None, Piece::None));
+
+	// Update winner if capturing king
+	if(get(dest)->piece() == Piece::King)
+	{
+		if(get(dest)->owner() == Player::Player1)
+			m_winner = Player::Player1;
+		else
+			m_winner = Player::Player2;
+	}
 }
 
 std::list<Board*> *Board::validMoves(Player::Who player) const
 {
-	std::list<Location> *pieces = playerPieces(player);
-	std::list<Location>::const_iterator piece_itr;
 	std::list<Board*> *ret = new std::list<Board*>;
+	std::list<Location> *pieces;
+	std::list<Location>::const_iterator piece_itr;
 	std::list<Board*> *pieceMoves;
 	std::list<Board*>::iterator pieceMoves_itr;
 	const BoardSlot *piece;
+
+	// If there is a winner, no valid moves
+	if(m_winner != Player::None)
+		return ret;
+
+	pieces = playerPieces(player);
 
 	for(piece_itr = pieces->begin();piece_itr != pieces->end();++piece_itr)
 	{
@@ -74,6 +91,11 @@ std::list<Location> *Board::playerPieces(Player::Who player) const
 	}
 
 	return ret;
+}
+
+Player::Who Board::winner(void) const
+{
+	return m_winner;
 }
 
 bool Board::isValidLocation(const Location &l) const

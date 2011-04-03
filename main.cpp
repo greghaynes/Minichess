@@ -55,12 +55,8 @@ void printBoard(const Board &b)
 	}
 }
 
-int main(int argc, char **argv)
+void printMoves(Board &b)
 {
-	Board b;
-	b.set(Location(0, 0), BoardSlot(Player::Player1, Piece::Bishop));
-	b.set(Location(1, 0), BoardSlot(Player::Player1, Piece::Pawn));
-
 	std::list<Board*> *moves = b.validMoves(Player::Player1);
 	std::list<Board*>::iterator itr;
 
@@ -71,6 +67,24 @@ int main(int argc, char **argv)
 		delete *itr;
 	}
 	delete moves;
+}
+
+int main(int argc, char **argv)
+{
+	Board *b = BoardGenerator::matchStart();
+
+	std::list<Board*> *moves = b->validMoves(Player::Player1);
+	std::list<Board*>::iterator itr;
+
+	for(itr = moves->begin();itr != moves->end();++itr)
+	{
+		printMoves(**itr);
+		std::cout << "\n---------------------\n\n";
+		delete *itr;
+	}
+	delete moves;
+
+	delete b;
 
 	return 0;
 }
