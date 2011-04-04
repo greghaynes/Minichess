@@ -35,9 +35,6 @@ void Board::set(const Location &l, const BoardSlot &p)
 
 void Board::move(const Location &src, const Location &dest)
 {
-	set(dest, *get(src));
-	set(src, BoardSlot(Player::None, Piece::None));
-
 	// Update winner if capturing king
 	if(get(dest)->piece() == Piece::King)
 	{
@@ -46,6 +43,9 @@ void Board::move(const Location &src, const Location &dest)
 		else
 			m_winner = Player::Player2;
 	}
+
+	set(dest, *get(src));
+	set(src, BoardSlot(Player::None, Piece::None));
 }
 
 std::list<Board*> *Board::validMoves(Player::Who player) const

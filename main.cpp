@@ -69,22 +69,65 @@ void printMoves(Board &b)
 	delete moves;
 }
 
+void printWinner(Board &b)
+{
+	if(b.winner() == Player::Player1)
+		std::cout << "Player 1 ";
+	else if(b.winner() == Player::Player2)
+		std::cout << "Player 2 ";
+	else
+		std::cout << "No one ";
+	std::cout << "wins!\n";
+}
+
+void makeRandomMove(Board *&b, Player::Who player)
+{
+	std::list<Board*> *moves = b->validMoves(player);
+	std::list<Board*>::iterator itr;
+
+	if(moves->size() == 0)
+	{
+		printWinner(*b);
+		delete moves;
+		delete b;
+		b = 0;
+		return;
+	}
+
+	delete b;
+	b = moves->front();
+        for(itr = moves->begin(),itr++;itr != moves->end();++itr)
+        {
+		delete *itr;
+	}
+	delete moves;
+}
+
 int main(int argc, char **argv)
 {
 	Board *b = BoardGenerator::matchStart();
 
-	std::list<Board*> *moves = b->validMoves(Player::Player1);
-	std::list<Board*>::iterator itr;
-
-	for(itr = moves->begin();itr != moves->end();++itr)
+	printBoard(*b);
+	std::cout << "\n";
+	int i;
+	for(i = 0;i < 40 && b;++i)
 	{
-		printMoves(**itr);
-		std::cout << "\n---------------------\n\n";
-		delete *itr;
+		makeRandomMove(b, Player::Player1);
+		if(!b)
+			break;
+		std::cout << "P1:\n";
+		printBoard(*b);
+		std::cout << "\n";
+		makeRandomMove(b, Player::Player2);
+		if(b)
+		{
+			std::cout << "P2:\n";
+			printBoard(*b);
+			std::cout << "\n";
+		}
 	}
-	delete moves;
-
-	delete b;
+	if(b)
+		std::cout << "Draw! (max moves limit)\n";
 
 	return 0;
 }
