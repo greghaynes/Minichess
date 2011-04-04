@@ -7,6 +7,9 @@
 #include <iostream>
 
 #include <ctype.h>
+#include <sys/time.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 void printBoardSlot(const BoardSlot &bs)
 {
@@ -84,6 +87,8 @@ void makeRandomMove(Board *&b, Player::Who player)
 {
 	std::list<Board*> *moves = b->validMoves(player);
 	std::list<Board*>::iterator itr;
+	Board *move_board;
+	int move, i;
 
 	if(moves->size() == 0)
 	{
@@ -94,17 +99,33 @@ void makeRandomMove(Board *&b, Player::Who player)
 		return;
 	}
 
+	// Not correct distribution but should be good enough
+	move = rand() % moves->size();
+
+
 	delete b;
-	b = moves->front();
-        for(itr = moves->begin(),itr++;itr != moves->end();++itr)
+        for(i=0,itr = moves->begin();itr != moves->end();++itr,++i)
         {
-		delete *itr;
+		if(i == move)
+			b = *itr;
+		else
+			delete *itr;
 	}
 	delete moves;
 }
 
 int main(int argc, char **argv)
 {
+	struct timeval tv;
+
+	if(-1 == gettimeofday(&tv, 0))
+	{
+		perror("Getting current time.");
+		return 1;
+	}
+
+	srand(tv.tv_usec);
+
 	Board *b = BoardGenerator::matchStart();
 
 	printBoard(*b);
