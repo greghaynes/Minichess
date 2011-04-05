@@ -4,6 +4,10 @@
 #define CFG_BOARD_WIDTH      5
 #define CFG_BOARD_HEIGHT     6
 
+#define PRINT_MOVES          1
+
+#define NUM_GAMES            1
+
 namespace Player
 {
 	enum Who

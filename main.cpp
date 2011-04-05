@@ -92,7 +92,9 @@ void makeRandomMove(Board *&b, Player::Who player)
 
 	if(moves->size() == 0)
 	{
+#if PRINT_MOVES
 		printWinner(*b);
+#endif
 		delete moves;
 		delete b;
 		b = 0;
@@ -125,30 +127,45 @@ int main(int argc, char **argv)
 	}
 
 	srand(tv.tv_usec);
-
-	Board *b = BoardGenerator::matchStart();
-
-	printBoard(*b);
-	std::cout << "\n";
-	int i;
-	for(i = 0;i < 40 && b;++i)
+	
+	int game_cnt;
+	for(game_cnt=0;game_cnt<NUM_GAMES;++game_cnt)
 	{
-		makeRandomMove(b, Player::Player1);
-		if(!b)
-			break;
-		std::cout << "P1:\n";
+		Board *b = BoardGenerator::matchStart();
+
+#if PRINT_MOVES
 		printBoard(*b);
 		std::cout << "\n";
-		makeRandomMove(b, Player::Player2);
-		if(b)
+#endif
+		int i;
+		for(i = 0;i < 40 && b;++i)
 		{
-			std::cout << "P2:\n";
+			makeRandomMove(b, Player::Player1);
+			if(!b)
+				break;
+#if PRINT_MOVES
+			std::cout << "P1:\n";
 			printBoard(*b);
 			std::cout << "\n";
+#endif
+			makeRandomMove(b, Player::Player2);
+			if(b)
+			{
+#if PRINT_MOVES
+				std::cout << "P2:\n";
+				printBoard(*b);
+				std::cout << "\n";
+#endif
+			}
+		}
+		if(b)
+		{
+			delete b;
+#if PRINT_MOVES
+			std::cout << "Draw! (max moves limit)\n";
+#endif
 		}
 	}
-	if(b)
-		std::cout << "Draw! (max moves limit)\n";
 
 	return 0;
 }
