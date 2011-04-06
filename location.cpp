@@ -21,3 +21,13 @@ unsigned char Location::y(void) const
 	return ((m_loc & 0xF0) >> 4);
 }
 
+bool Location::operator==(const Location &other) const
+{
+	return x() == other.x() && y() == other.y();
+}
+
+bool Location::operator!=(const Location &other) const
+{
+	return !operator==(other);
+}
+

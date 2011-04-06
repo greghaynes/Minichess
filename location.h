@@ -11,6 +11,9 @@ class Location
 		unsigned char x(void) const;
 		unsigned char y(void) const;
 
+		bool operator==(const Location &other) const;
+		bool operator!=(const Location &other) const;
+
 	private:
 		unsigned char m_loc;
 

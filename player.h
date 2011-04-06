@@ -1,6 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "move.h"
+
 class Board;
 
 class Player
@@ -19,7 +21,7 @@ class Player
 
 		Player::Who who(void) const;
 
-		virtual Board *move(Board *board) = 0;
+		virtual Move move(Board *board) = 0;
 
 	private:
 		Player::Who m_who;
