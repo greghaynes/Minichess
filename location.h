@@ -5,14 +5,14 @@ class Location
 {
 
 	public:
+		Location(void);
 		Location(unsigned char x, unsigned char y);
 
-		signed char x() const;
-		signed char y() const;
+		unsigned char x(void) const;
+		unsigned char y(void) const;
 
 	private:
-		signed char m_x;
-		signed char m_y;
+		unsigned char m_loc;
 
 };
 

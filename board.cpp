@@ -33,28 +33,28 @@ void Board::set(const Location &l, const BoardSlot &p)
 	m_board[l.x()][l.y()] = p;
 }
 
-void Board::move(const Location &src, const Location &dest)
+void Board::move(Move move)
 {
 	// Update winner if capturing king
-	if(get(dest)->piece() == Piece::King)
+	if(get(move.to())->piece() == Piece::King)
 	{
-		if(get(dest)->owner() == Player::Player1)
+		if(get(move.to())->owner() == Player::Player1)
 			m_winner = Player::Player1;
 		else
 			m_winner = Player::Player2;
 	}
 
-	set(dest, *get(src));
-	set(src, BoardSlot(Player::None, Piece::None));
+	set(move.to(), *get(move.from()));
+	set(move.from(), BoardSlot(Player::None, Piece::None));
 }
 
-std::list<Board*> *Board::validMoves(Player::Who player) const
+std::list<Move> *Board::validMoves(Player::Who player) const
 {
-	std::list<Board*> *ret = new std::list<Board*>;
+	std::list<Move> *ret = new std::list<Move>;
 	std::list<Location> *pieces;
 	std::list<Location>::const_iterator piece_itr;
-	std::list<Board*> *pieceMoves;
-	std::list<Board*>::iterator pieceMoves_itr;
+	std::list<Move> *pieceMoves;
+	std::list<Move>::iterator pieceMoves_itr;
 	const BoardSlot *piece;
 
 	// If there is a winner, no valid moves

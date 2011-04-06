@@ -8,16 +8,6 @@
 
 #define NUM_GAMES            1
 
-namespace Player
-{
-	enum Who
-	{
-		None,
-		Player1,
-		Player2
-	};
-}
-
 namespace Piece
 {
 	enum Type

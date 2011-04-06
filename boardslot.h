@@ -2,7 +2,9 @@
 #define BOARDSLOT_H
 
 #include "config.h"
+#include "player.h"
 #include "location.h"
+#include "move.h"
 
 #include <list>
 
@@ -17,10 +19,10 @@ class BoardSlot
 		Piece::Type piece(void) const;
 		Player::Who owner(void) const;
 
-		std::list<Board*> *validMoves(const Board &b, const Location &loc) const;
+		std::list<Move> *validMoves(const Board &b, const Location &loc) const;
 
 	private:
-		void scanMoves(std::list<Board*> *vals,
+		void scanMoves(std::list<Move> *vals,
 								  const Board &b,
 								  const Location &origin,
 								  int dx,
@@ -28,7 +30,7 @@ class BoardSlot
 								  bool can_capture=true,
 								  int max_cnt=0) const;
 
-		void scanMoves(std::list<Board*> *vals,
+		void scanMoves(std::list<Move> *vals,
 							  const Board &b,
 							  const Location &origin,
 							  const Location &l,

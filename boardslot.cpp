@@ -17,17 +17,23 @@ Player::Who BoardSlot::owner(void) const
 	return (Player::Who)m_owner;
 }
 
-std::list<Board*> *BoardSlot::validMoves(const Board &b, const Location &loc) const
+std::list<Move> *BoardSlot::validMoves(const Board &b, const Location &loc) const
 {
-	std::list<Board*> *moves = new std::list<Board*>();
+	std::list<Move> *moves = new std::list<Move>;
 	
 	switch(m_piece)
 	{
 		case Piece::Pawn:
 			if(m_owner == Player::Player1)
-				scanMoves(moves, b, loc, 0, 1, true, 1);
+			{
+				scanMoves(moves, b, loc, 0, 1, false, 1);
+				// check for captures
+			}
 			else
-				scanMoves(moves, b, loc, 0, -1, true, 1);
+			{
+				scanMoves(moves, b, loc, 0, -1, false, 1);
+				// check for captures
+			}
 			break;
 		case Piece::Knight:
 			scanMoves(moves, b, loc, 1, 2, true, 1);
@@ -79,7 +85,7 @@ std::list<Board*> *BoardSlot::validMoves(const Board &b, const Location &loc) co
 	return moves;
 }
 
-void BoardSlot::scanMoves(std::list<Board*> *vals,
+void BoardSlot::scanMoves(std::list<Move> *vals,
                           const Board &b,
                           const Location &origin,
                           int dx,
@@ -98,7 +104,7 @@ void BoardSlot::scanMoves(std::list<Board*> *vals,
 	          max_cnt);
 }
 
-void BoardSlot::scanMoves(std::list<Board*> *vals,
+void BoardSlot::scanMoves(std::list<Move> *vals,
                       const Board &b,
                       const Location &origin,
                       const Location &l,
@@ -115,9 +121,7 @@ void BoardSlot::scanMoves(std::list<Board*> *vals,
 		return;
 	if(piece->owner() == Player::None || can_capture)
 	{
-		Board *new_board = new Board(b);
-		new_board->move(origin, l);
-		vals->push_front(new_board);
+		vals->push_front(Move(origin, l));
 		if(piece->owner() == Player::None)
 		{
 			++cnt;
@@ -134,5 +138,4 @@ void BoardSlot::scanMoves(std::list<Board*> *vals,
 		}
 	}
 }
-
 

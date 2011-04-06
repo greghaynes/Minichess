@@ -2,8 +2,10 @@
 #define BOARD_H
 
 #include "config.h"
+#include "player.h"
 #include "location.h"
 #include "boardslot.h"
+#include "move.h"
 
 #include <list>
 
@@ -18,9 +20,9 @@ class Board
 		const BoardSlot *get(const Location &l) const;
 		void set(const Location &l, const BoardSlot &p);
 
-		void move(const Location &src, const Location &dest);
+		void move(Move move);
 
-		std::list<Board*> *validMoves(Player::Who player) const;
+		std::list<Move> *validMoves(Player::Who player) const;
 
 		std::list<Location> *playerPieces(Player::Who player) const;
 

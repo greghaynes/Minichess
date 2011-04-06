@@ -58,20 +58,6 @@ void printBoard(const Board &b)
 	}
 }
 
-void printMoves(Board &b)
-{
-	std::list<Board*> *moves = b.validMoves(Player::Player1);
-	std::list<Board*>::iterator itr;
-
-	for(itr = moves->begin();itr != moves->end();++itr)
-	{
-		printBoard(**itr);
-		std::cout << "\n";
-		delete *itr;
-	}
-	delete moves;
-}
-
 void printWinner(Board &b)
 {
 	if(b.winner() == Player::Player1)
@@ -85,8 +71,8 @@ void printWinner(Board &b)
 
 void makeRandomMove(Board *&b, Player::Who player)
 {
-	std::list<Board*> *moves = b->validMoves(player);
-	std::list<Board*>::iterator itr;
+	std::list<Move> *moves = b->validMoves(player);
+	std::list<Move>::iterator itr;
 	Board *move_board;
 	int move, i;
 
@@ -104,14 +90,10 @@ void makeRandomMove(Board *&b, Player::Who player)
 	// Not correct distribution but should be good enough
 	move = rand() % moves->size();
 
-
-	delete b;
-        for(i=0,itr = moves->begin();itr != moves->end();++itr,++i)
-        {
+	for(i=0,itr = moves->begin();itr != moves->end();++itr,++i)
+	{
 		if(i == move)
-			b = *itr;
-		else
-			delete *itr;
+			b->move(*itr);
 	}
 	delete moves;
 }
