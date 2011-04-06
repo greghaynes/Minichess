@@ -3,28 +3,28 @@
 
 BoardSlot::BoardSlot(Player::Who owner, Piece::Type piece)
 {
-	m_piece = (char)piece;
-	m_owner = (char)owner;
+	m_state = (char)piece;
+	m_state |= (char)(owner<<4);
 }
 
 Piece::Type BoardSlot::piece(void) const
 {
-	return (Piece::Type)m_piece;
+	return (Piece::Type)(m_state & 0xF);
 }
 
 Player::Who BoardSlot::owner(void) const
 {
-	return (Player::Who)m_owner;
+	return (Player::Who)((m_state & 0xF0) >> 4);
 }
 
 std::list<Move> *BoardSlot::validMoves(const Board &b, const Location &loc) const
 {
 	std::list<Move> *moves = new std::list<Move>;
 	
-	switch(m_piece)
+	switch(piece())
 	{
 		case Piece::Pawn:
-			if(m_owner == Player::Player1)
+			if(owner() == Player::Player1)
 			{
 				scanMoves(moves, b, loc, 0, 1, false, 1);
 				// check for captures
@@ -117,7 +117,7 @@ void BoardSlot::scanMoves(std::list<Move> *vals,
 	const BoardSlot *piece = b.get(l);
 	if(!piece)
 		return;
-	if(piece->owner() == m_owner)
+	if(piece->owner() == owner())
 		return;
 	if(piece->owner() == Player::None || can_capture)
 	{

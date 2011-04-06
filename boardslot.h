@@ -40,8 +40,7 @@ class BoardSlot
 							  bool can_capture=true,
 							  int max_cnt=0) const;
 
-		char m_piece;
-		char m_owner;
+		char m_state;
 
 };
 
