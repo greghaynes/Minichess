@@ -8,6 +8,7 @@
 #include "move.h"
 
 #include <list>
+#include <string>
 
 class Board
 {
@@ -27,6 +28,8 @@ class Board
 		std::list<Location> *playerPieces(Player::Who player) const;
 
 		Player::Who winner(void) const;
+
+		std::string *toString(void) const;
 
 	private:
 		bool isValidLocation(const Location &l) const;

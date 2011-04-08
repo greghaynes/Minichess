@@ -98,6 +98,21 @@ Player::Who Board::winner(void) const
 	return m_winner;
 }
 
+std::string *Board::toString(void) const
+{
+	std::string *ret = new std::string;
+	int i,j;
+	for(i = 0;i < CFG_BOARD_HEIGHT;i++)
+	{
+		for(j = 0;j < CFG_BOARD_WIDTH;j++)
+		{
+			ret->push_back(get(Location(j, i))->toChar());
+		}
+		ret->push_back('\n');
+	}
+	return ret;
+}
+
 bool Board::isValidLocation(const Location &l) const
 {
 	return l.x() >= 0 && l.y() >= 0

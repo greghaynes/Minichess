@@ -21,6 +21,8 @@ class BoardSlot
 
 		std::list<Move> *validMoves(const Board &b, const Location &loc) const;
 
+		char toChar(void) const;
+
 	private:
 		void scanMoves(std::list<Move> *vals,
 								  const Board &b,

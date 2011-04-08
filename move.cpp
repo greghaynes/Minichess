@@ -20,7 +20,7 @@ Location Move::to(void) const
 	return m_to;
 }
 
-bool Move::valid(void) const
+bool Move::isValid(void) const
 {
 	return m_from != m_to;
 }

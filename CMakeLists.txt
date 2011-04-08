@@ -6,6 +6,7 @@ set(MINICHESS_SRCS
 	boardslot.cpp
 	boardgenerator.cpp
 	player.cpp
+	randomplayer.cpp
 	game.cpp
 	move.cpp
 	location.cpp)

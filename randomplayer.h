@@ -11,7 +11,7 @@ class RandomPlayer
 		RandomPlayer(void);
 		RandomPlayer(Player::Who who);
 
-		Move move(void);
+		Move move(Board *b);
 
 	private:
 		void init(void);

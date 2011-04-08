@@ -104,6 +104,41 @@ void BoardSlot::scanMoves(std::list<Move> *vals,
 	          max_cnt);
 }
 
+char BoardSlot::toChar(void) const
+{
+	char ch;
+	switch(piece())
+	{
+		case Piece::None:
+			ch = '.';
+			break;
+		case Piece::Pawn:
+			ch = 'P';
+			break;
+		case Piece::Rook:
+			ch = 'R';
+			break;
+		case Piece::Bishop:
+			ch = 'B';
+			break;
+		case Piece::Knight:
+			ch = 'N';
+			break;
+		case Piece::King:
+			ch = 'K';
+			break;
+		case Piece::Queen:
+			ch = 'Q';
+			break;
+		default:
+			ch = '.';
+	}
+	if(owner() == Player::Player1)
+		ch = tolower(ch);
+
+	return ch;
+}
+
 void BoardSlot::scanMoves(std::list<Move> *vals,
                       const Board &b,
                       const Location &origin,

@@ -1,8 +1,6 @@
-#include "board.h"
-#include "boardslot.h"
-#include "config.h"
-#include "location.h"
 #include "boardgenerator.h"
+#include "randomplayer.h"
+#include "game.h"
 
 #include <iostream>
 
@@ -11,54 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void printBoardSlot(const BoardSlot &bs)
-{
-	char ch;
-	switch(bs.piece())
-	{
-		case Piece::None:
-			ch = '.';
-			break;
-		case Piece::Pawn:
-			ch = 'P';
-			break;
-		case Piece::Rook:
-			ch = 'R';
-			break;
-		case Piece::Bishop:
-			ch = 'B';
-			break;
-		case Piece::Knight:
-			ch = 'N';
-			break;
-		case Piece::King:
-			ch = 'K';
-			break;
-		case Piece::Queen:
-			ch = 'Q';
-			break;
-		default:
-			ch = '.';
-	}
-	if(bs.owner() == Player::Player1)
-		ch = tolower(ch);
-	std::cout << ch;
-}
-
-void printBoard(const Board &b)
-{
-	int i,j;
-	for(i = 0;i < CFG_BOARD_HEIGHT;i++)
-	{
-		for(j = 0;j < CFG_BOARD_WIDTH;j++)
-		{
-			printBoardSlot(*b.get(Location(j, i)));
-		}
-		std::cout << "\n";
-	}
-}
-
-void printWinner(Board &b)
+void printWinner(const Board &b)
 {
 	if(b.winner() == Player::Player1)
 		std::cout << "Player 1 ";
@@ -69,85 +20,14 @@ void printWinner(Board &b)
 	std::cout << "wins!\n";
 }
 
-void makeRandomMove(Board *&b, Player::Who player)
-{
-	std::list<Move> *moves = b->validMoves(player);
-	std::list<Move>::iterator itr;
-	Board *move_board;
-	int move, i;
-
-	if(moves->size() == 0)
-	{
-#if PRINT_MOVES
-		printWinner(*b);
-#endif
-		delete moves;
-		delete b;
-		b = 0;
-		return;
-	}
-
-	// Not correct distribution but should be good enough
-	move = rand() % moves->size();
-
-	for(i=0,itr = moves->begin();itr != moves->end();++itr,++i)
-	{
-		if(i == move)
-			b->move(*itr);
-	}
-	delete moves;
-}
-
 int main(int argc, char **argv)
 {
-	struct timeval tv;
+	Game g(BoardGenerator::matchStart());
+	g.setPlayer(new RandomPlayer(Player::Player1));
+	g.setPlayer(new RandomPlayer(Player::Player2));
+	g.play();
 
-	if(-1 == gettimeofday(&tv, 0))
-	{
-		perror("Getting current time.");
-		return 1;
-	}
-
-	srand(tv.tv_usec);
-	
-	int game_cnt;
-	for(game_cnt=0;game_cnt<NUM_GAMES;++game_cnt)
-	{
-		Board *b = BoardGenerator::matchStart();
-
-#if PRINT_MOVES
-		printBoard(*b);
-		std::cout << "\n";
-#endif
-		int i;
-		for(i = 0;i < 40 && b;++i)
-		{
-			makeRandomMove(b, Player::Player1);
-			if(!b)
-				break;
-#if PRINT_MOVES
-			std::cout << "P1:\n";
-			printBoard(*b);
-			std::cout << "\n";
-#endif
-			makeRandomMove(b, Player::Player2);
-			if(b)
-			{
-#if PRINT_MOVES
-				std::cout << "P2:\n";
-				printBoard(*b);
-				std::cout << "\n";
-#endif
-			}
-		}
-		if(b)
-		{
-			delete b;
-#if PRINT_MOVES
-			std::cout << "Draw! (max moves limit)\n";
-#endif
-		}
-	}
+	printWinner(*g.board());
 
 	return 0;
 }

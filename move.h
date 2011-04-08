@@ -7,11 +7,13 @@ class Move
 {
 
 	public:
+		Move(void);
 		Move(Location from, Location to);
 
 		Location from(void) const;
 		Location to(void) const;
 
+		bool isValid(void) const;
 
 	private:
 		Location m_from;

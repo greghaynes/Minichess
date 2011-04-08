@@ -9,7 +9,7 @@ class Game
 
 	public:
 		Game(void);
-		Game(const Board &b);
+		Game(Board *b);
 		~Game(void);
 
 		const Board *board(void) const;
@@ -22,10 +22,11 @@ class Game
 		bool play(void);
 		bool stop(void);
 
-		bool isPlaying(void);
+		bool isPlaying(void) const;
 
 	private:
 		int ndxFromPlayer(Player::Who who) const;
+		bool movePlayer(Player::Who);
 
 		Board *m_board;
 		Player *m_players[2];
