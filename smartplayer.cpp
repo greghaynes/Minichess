@@ -18,7 +18,7 @@ SmartPlayer::SmartPlayer(Player::Who who)
 
 Move SmartPlayer::move(Board *b)
 {
-	negamax(b, who(), 2);
+	negamax(b, who(), 3);
 	return negamax_move;
 }
 
@@ -43,7 +43,7 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth)
 	}
 
 	Move best_move = *(moves->begin());
-	int max_score = -100;
+	int max_score = CFG_GAMEVAL_LOSE;
 	int tmp_score;
 	Player::Who tmp_winner;
 	for(itr = moves->begin();itr != moves->end();itr++)
@@ -54,21 +54,21 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth)
 		if(tmp_winner != Player::None)
 		{
 			if(tmp_winner == cur_player)
-				tmp_score = 100;
+				tmp_score = CFG_GAMEVAL_WIN;
 			else
-				tmp_score = -100;
+				tmp_score = CFG_GAMEVAL_LOSE;
 		}
 		else
 			tmp_score = - negamax(&tmp_board, Player::opponent(cur_player), depth);
 
-		if(tmp_score == 100)
+		if(tmp_score == CFG_GAMEVAL_WIN)
 		{
 			delete moves;
 			negamax_move = *itr;
-			return 100;
+			return tmp_score;
 		}
 
-		if(tmp_score > max_score)
+		if(tmp_score < max_score)
 		{
 			best_move = *itr;
 			max_score = tmp_score;
