@@ -139,6 +139,28 @@ char BoardSlot::toChar(void) const
 	return ch;
 }
 
+int BoardSlot::value(void) const
+{
+	switch(piece())
+	{
+		case Piece::Pawn:
+			return CFG_PIECEVAL_PAWN;
+		case Piece::Rook:
+			return CFG_PIECEVAL_ROOK;
+		case Piece::Bishop:
+			return CFG_PIECEVAL_BISHOP;
+		case Piece::Knight:
+			return CFG_PIECEVAL_KNIGHT;
+		case Piece::King:
+			return CFG_PIECEVAL_KING;
+		case Piece::Queen:
+			return CFG_PIECEVAL_QUEEN;
+		case Piece::None:
+		default:
+			return CFG_PIECEVAL_NONE;
+	}
+}
+
 void BoardSlot::scanMoves(std::list<Move> *vals,
                       const Board &b,
                       const Location &origin,

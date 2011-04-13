@@ -31,6 +31,8 @@ class Board
 
 		std::string *toString(void) const;
 
+		int populationCount(Player::Who player) const;
+
 	private:
 		bool isValidLocation(const Location &l) const;
 

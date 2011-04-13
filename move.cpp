@@ -25,3 +25,8 @@ bool Move::isValid(void) const
 	return m_from != m_to;
 }
 
+Move Move::getInverted(void) const
+{
+	return Move(m_to, m_from);
+}
+

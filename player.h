@@ -16,6 +16,8 @@ class Player
 			Player2
 		};
 
+		static Player::Who opponent(Player::Who);
+
 		Player(void);
 		Player(Player::Who);
 

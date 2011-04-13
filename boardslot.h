@@ -23,6 +23,8 @@ class BoardSlot
 
 		char toChar(void) const;
 
+		int value(void) const;
+
 	private:
 		void scanMoves(std::list<Move> *vals,
 								  const Board &b,

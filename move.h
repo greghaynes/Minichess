@@ -15,6 +15,8 @@ class Move
 
 		bool isValid(void) const;
 
+		Move getInverted(void) const;
+
 	private:
 		Location m_from;
 		Location m_to;
