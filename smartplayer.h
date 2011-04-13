@@ -14,7 +14,7 @@ class SmartPlayer
 		Move move(Board *b);
 
 	private:
-		int negamax(Board *b, Player::Who cur_player);
+		int negamax(Board *b, Player::Who cur_player, int depth);
 		int boardEval(Board *b, Player::Who cur_player);
 
 };

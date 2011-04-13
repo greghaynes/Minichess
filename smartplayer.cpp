@@ -18,28 +18,56 @@ SmartPlayer::SmartPlayer(Player::Who who)
 
 Move SmartPlayer::move(Board *b)
 {
+	negamax(b, who(), 2);
+	return negamax_move;
 }
 
-int SmartPlayer::negamax(Board *b, Player::Who cur_player)
+int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth)
 {
 	Board tmp_board(*b);
-	std::list<Move> *moves = b->validMoves(who());
+	std::list<Move> *moves;
 	std::list<Move>::iterator itr;
 
+	if(depth == 0)
+	{
+		negamax_move = Move();
+		return boardEval(b, cur_player);
+	}
+	depth--;
+
+	moves = b->validMoves(cur_player);
 	if(moves->size() == 0)
 	{
 		negamax_move = Move();
 		return 0;
 	}
 
-	Move best_move;
-	int max_score;
+	Move best_move = *(moves->begin());
+	int max_score = -100;
 	int tmp_score;
+	Player::Who tmp_winner;
 	for(itr = moves->begin();itr != moves->end();itr++)
 	{
 		tmp_board.move(*itr);
 
-		tmp_score = negamax(&tmp_board, Player::opponent(cur_player));
+		tmp_winner = b->winner();
+		if(tmp_winner != Player::None)
+		{
+			if(tmp_winner == cur_player)
+				tmp_score = 100;
+			else
+				tmp_score = -100;
+		}
+		else
+			tmp_score = - negamax(&tmp_board, Player::opponent(cur_player), depth);
+
+		if(tmp_score == 100)
+		{
+			delete moves;
+			negamax_move = *itr;
+			return 100;
+		}
+
 		if(tmp_score > max_score)
 		{
 			best_move = *itr;
@@ -57,6 +85,6 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player)
 
 int SmartPlayer::boardEval(Board *b, Player::Who cur_player)
 {
-	return b->populationCount(cur_player);
+	return b->populationCount(cur_player) - b->populationCount(Player::opponent(cur_player));
 }
 

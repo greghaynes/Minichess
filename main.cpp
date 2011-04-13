@@ -1,5 +1,6 @@
 #include "boardgenerator.h"
 #include "randomplayer.h"
+#include "smartplayer.h"
 #include "game.h"
 
 #include <iostream>
@@ -24,7 +25,7 @@ int main(int argc, char **argv)
 {
 	Game g(BoardGenerator::matchStart());
 	g.setPlayer(new RandomPlayer(Player::Player1));
-	g.setPlayer(new RandomPlayer(Player::Player2));
+	g.setPlayer(new SmartPlayer(Player::Player2));
 	g.play();
 
 	printWinner(*g.board());

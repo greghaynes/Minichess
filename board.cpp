@@ -120,7 +120,10 @@ int Board::populationCount(Player::Who player) const
 	for(i=0;i<CFG_BOARD_WIDTH;++i)
 	{
 		for(j=0;j<CFG_BOARD_HEIGHT;++j)
-			score += m_board[i][j].value();
+		{
+			if(m_board[i][j].owner() == player)
+				score += m_board[i][j].value();
+		}
 	}
 	return score;
 }
