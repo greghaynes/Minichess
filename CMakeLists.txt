@@ -7,6 +7,7 @@ set(MINICHESS_SRCS
 	boardgenerator.cpp
 	player.cpp
 	randomplayer.cpp
+	smartplayer.cpp
 	game.cpp
 	move.cpp
 	location.cpp)
