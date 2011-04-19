@@ -3,6 +3,8 @@
 
 #include "player.h"
 
+class Move;
+
 class SmartPlayer
 	: public Player
 {
@@ -14,7 +16,7 @@ class SmartPlayer
 		Move move(Board *b);
 
 	private:
-		int negamax(Board *b, Player::Who cur_player, int depth);
+		int negamax(Board *b, Player::Who cur_player, int depth, const Move &move);
 		int boardEval(Board *b, Player::Who cur_player);
 
 };

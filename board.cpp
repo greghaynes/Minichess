@@ -35,13 +35,10 @@ void Board::set(const Location &l, const BoardSlot &p)
 
 void Board::move(Move move)
 {
-	// Update winner if capturing king
 	if(get(move.to())->piece() == Piece::King)
 	{
-		if(get(move.to())->owner() == Player::Player1)
-			m_winner = Player::Player1;
-		else
-			m_winner = Player::Player2;
+		// Update winner if capturing king
+		m_winner = get(move.from())->owner();
 	}
 
 	set(move.to(), *get(move.from()));

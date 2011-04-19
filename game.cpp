@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <stdexcept>
 
 Game::Game(void)
 	: m_board(0)
@@ -85,7 +86,15 @@ bool Game::isPlaying(void) const
 
 int Game::ndxFromPlayer(Player::Who who) const
 {
-	return who - Player::Player1;
+	switch(who)
+	{
+		case Player::Player1:
+			return 0;
+		case Player::Player2:
+			return 1;
+		default:
+			throw std::runtime_error("Invalid player in playerToNdx");
+	}
 }
 
 bool Game::movePlayer(Player::Who who)
