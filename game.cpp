@@ -10,6 +10,9 @@ Game::Game(void)
 {
 	m_players[0] = 0;
 	m_players[1] = 0;
+
+	timerclear(&m_expiredTime[0]);
+	timerclear(&m_expiredTime[1]);
 }
 
 Game::Game(Board *b)
@@ -18,6 +21,9 @@ Game::Game(Board *b)
 	m_board = b;
 	m_players[0] = 0;
 	m_players[1] = 0;
+
+	timerclear(&m_expiredTime[0]);
+	timerclear(&m_expiredTime[1]);
 }
 
 Game::~Game(void)
@@ -59,11 +65,26 @@ bool Game::play(void)
 	m_isPlaying = true;
 	int i = 0;
 	Move mv;
+	bool valid_move;
+	struct timeval tv_start, tv_end, tv_elapsed;
 	while(isPlaying() && m_board->winner() == Player::None && i < 40)
 	{
-		if(!movePlayer(Player::Player1))
+		gettimeofday(&tv_start, 0);
+		valid_move = movePlayer(Player::Player1);
+		gettimeofday(&tv_end, 0);
+		timersub(&tv_end, &tv_start, &tv_elapsed);
+		timeradd(&m_expiredTime[ndxFromPlayer(Player::Player1)], &tv_elapsed, &m_expiredTime[ndxFromPlayer(Player::Player1)]);
+		printTimeLeft();
+		if(!valid_move)
 			break;
-		if(!movePlayer(Player::Player2))
+
+		gettimeofday(&tv_start, 0);
+		valid_move = movePlayer(Player::Player2);
+		gettimeofday(&tv_end, 0);
+		timersub(&tv_end, &tv_start, &tv_elapsed);
+		timeradd(&m_expiredTime[ndxFromPlayer(Player::Player2)], &tv_elapsed, &m_expiredTime[ndxFromPlayer(Player::Player2)]);
+		printTimeLeft();
+		if(!valid_move)
 			break;
 		i++;
 	}
@@ -113,5 +134,18 @@ bool Game::movePlayer(Player::Who who)
 	delete str;
 
 	return true;
+}
+
+void Game::printTimeLeft(void) const
+{
+	struct timeval rem, total;
+	total.tv_sec = 360;
+	total.tv_usec = 0;
+
+	timersub(&total, &m_expiredTime[ndxFromPlayer(Player::Player1)], &rem);
+	std::cout << rem.tv_sec / 60  << ":" << rem.tv_sec % 60 << " - ";
+	timersub(&total, &m_expiredTime[ndxFromPlayer(Player::Player2)], &rem);
+	std::cout << rem.tv_sec / 60 << ":" << rem.tv_sec % 60 << std::endl;
+	std::cout << std::endl;
 }
 

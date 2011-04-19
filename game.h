@@ -4,6 +4,8 @@
 #include "player.h"
 #include "board.h"
 
+#include <sys/time.h>
+
 class Game
 {
 
@@ -27,10 +29,13 @@ class Game
 	private:
 		int ndxFromPlayer(Player::Who who) const;
 		bool movePlayer(Player::Who);
+		void printTimeLeft(void) const;
 
 		Board *m_board;
 		Player *m_players[2];
 		bool m_isPlaying;
+
+		struct timeval m_expiredTime[2];
 
 };
 
