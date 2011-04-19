@@ -19,7 +19,12 @@ SmartPlayer::SmartPlayer(Player::Who who)
 
 Move SmartPlayer::move(Board *b)
 {
-	negamax(b, who(), 5, Move());
+	int i;
+	for(i=1;i<6;i+=2)
+	{
+		if(negamax(b, who(), i, Move()) == CFG_GAMEVAL_WIN)
+			return negamax_move;
+	}
 	return negamax_move;
 }
 

@@ -40,6 +40,15 @@ void Board::move(Move move)
 		// Update winner if capturing king
 		m_winner = get(move.from())->owner();
 	}
+	else if(get(move.from())->piece() == Piece::Pawn)
+	{
+		if(move.to().y() == 5 || move.to().y() == 0)
+		{
+			set(move.to(), BoardSlot(get(move.from())->owner(), Piece::Queen));
+			set(move.from(), BoardSlot(Player::None, Piece::None));
+			return;
+		}
+	}
 
 	set(move.to(), *get(move.from()));
 	set(move.from(), BoardSlot(Player::None, Piece::None));
