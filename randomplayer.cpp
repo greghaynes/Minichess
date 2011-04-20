@@ -23,13 +23,14 @@ RandomPlayer::RandomPlayer(Player::Who who)
 
 Move RandomPlayer::move(Board *b, struct timeval *time_remain)
 {
-	std::list<Move> *moves = b->validMoves(who());
-	if(!moves->size())
+	std::list<Move> moves;
+	b->validMoves(who(), moves);
+	if(!moves.size())
 		return Move();
-	int randval = rand() % moves->size();
+	int randval = rand() % moves.size();
 	std::list<Move>::iterator itr;
 	int i;
-	for(itr=moves->begin(),i=0;itr != moves->end();++i,++itr)
+	for(itr=moves.begin(),i=0;itr != moves.end();++i,++itr)
 	{
 		if(i==randval)
 			return *itr;

@@ -23,9 +23,9 @@ class Board
 
 		void move(Move move);
 
-		std::list<Move> *validMoves(Player::Who player) const;
+		void validMoves(Player::Who player, std::list<Move> &moves) const;
 
-		std::list<Location> *playerPieces(Player::Who player) const;
+		void playerPieces(Player::Who player, std::list<Location> &location) const;
 
 		Player::Who winner(void) const;
 

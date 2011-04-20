@@ -19,7 +19,7 @@ class BoardSlot
 		Piece::Type piece(void) const;
 		Player::Who owner(void) const;
 
-		std::list<Move> *validMoves(const Board &b, const Location &loc) const;
+		void validMoves(const Board &b, const Location &loc, std::list<Move> &moves) const;
 
 		char toChar(void) const;
 

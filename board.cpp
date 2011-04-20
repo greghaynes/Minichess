@@ -54,38 +54,37 @@ void Board::move(Move move)
 	set(move.from(), BoardSlot(Player::None, Piece::None));
 }
 
-std::list<Move> *Board::validMoves(Player::Who player) const
+void Board::validMoves(Player::Who player, std::list<Move> &moves) const
 {
-	std::list<Move> *ret = new std::list<Move>;
-	std::list<Location> *pieces;
+	std::list<Move> *ret = &moves;
+	std::list<Location> pieces;
 	std::list<Location>::const_iterator piece_itr;
-	std::list<Move> *pieceMoves;
+	std::list<Move> pieceMoves;
 	std::list<Move>::iterator pieceMoves_itr;
 	const BoardSlot *piece;
 
 	// If there is a winner, no valid moves
 	if(m_winner != Player::None)
-		return ret;
+		return;
 
-	pieces = playerPieces(player);
+	playerPieces(player, pieces);
 
-	for(piece_itr = pieces->begin();piece_itr != pieces->end();++piece_itr)
+	for(piece_itr = pieces.begin();piece_itr != pieces.end();++piece_itr)
 	{
 		piece = get(*piece_itr);
-		pieceMoves = piece->validMoves(*this, *piece_itr);
+		piece->validMoves(*this, *piece_itr, pieceMoves);
 		// Append moves for each piece to ret list
-		for(pieceMoves_itr = pieceMoves->begin();pieceMoves_itr != pieceMoves->end();++pieceMoves_itr)
+		for(pieceMoves_itr = pieceMoves.begin();pieceMoves_itr != pieceMoves.end();++pieceMoves_itr)
 			ret->push_front(*pieceMoves_itr);
-		delete pieceMoves;
+		pieceMoves.clear();
 	}
-	delete pieces;
 
-	return ret;
+	return;
 }
 
-std::list<Location> *Board::playerPieces(Player::Who player) const
+void Board::playerPieces(Player::Who player, std::list<Location> &location) const
 {
-	std::list<Location> *ret = new std::list<Location>();
+	std::list<Location> *ret = &location;
 	int i, j;
 	for(i = 0;i<CFG_BOARD_WIDTH;i++)
 	{
@@ -95,8 +94,6 @@ std::list<Location> *Board::playerPieces(Player::Who player) const
 				ret->push_front(Location(i, j));
 		}
 	}
-
-	return ret;
 }
 
 Player::Who Board::winner(void) const

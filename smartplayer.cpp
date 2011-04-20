@@ -31,7 +31,7 @@ Move SmartPlayer::move(Board *b, struct timeval *time_remain)
 int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move &move)
 {
 	Board *tmp_board;
-	std::list<Move> *moves;
+	std::list<Move> moves;
 	std::list<Move>::iterator itr;
 
 	if(b->winner() != Player::None)
@@ -55,17 +55,17 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 	}
 	depth--;
 
-	moves = b->validMoves(cur_player);
-	if(moves->size() == 0)
+	b->validMoves(cur_player, moves);
+	if(moves.size() == 0)
 	{
 		negamax_move = Move();
 		return 0;
 	}
 
-	Move best_move = *(moves->begin());
+	Move best_move = *(moves.begin());
 	int max_score = CFG_GAMEVAL_LOSE;
 	int tmp_score;
-	for(itr = moves->begin();itr != moves->end();itr++)
+	for(itr = moves.begin();itr != moves.end();itr++)
 	{
 		tmp_board = new Board(*b);
 		tmp_board->move(*itr);
@@ -84,7 +84,6 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 	negamax_move = best_move;
 	return max_score;
 	
-	delete moves;
 	delete tmp_board;
 }
 

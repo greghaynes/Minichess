@@ -17,9 +17,8 @@ Player::Who BoardSlot::owner(void) const
 	return (Player::Who)((m_state & 0xF0) >> 4);
 }
 
-std::list<Move> *BoardSlot::validMoves(const Board &b, const Location &loc) const
+void BoardSlot::validMoves(const Board &b, const Location &loc, std::list<Move> &moves) const
 {
-	std::list<Move> *moves = new std::list<Move>;
 	Location t_loc;
 	const BoardSlot *t_slot;
 	
@@ -28,81 +27,79 @@ std::list<Move> *BoardSlot::validMoves(const Board &b, const Location &loc) cons
 		case Piece::Pawn:
 			if(owner() == Player::Player1)
 			{
-				scanMoves(moves, b, loc, 0, 1, false, 1);
+				scanMoves(&moves, b, loc, 0, 1, false, 1);
 
 				t_loc = Location(loc.x()+1,loc.y()+1);
 				t_slot = b.get(t_loc);
 				if(t_slot && t_slot->owner() == Player::Player2)
-					moves->push_front(Move(loc, t_loc));
+					moves.push_front(Move(loc, t_loc));
 
 				t_loc = Location(loc.x()-1,loc.y()+1);
 				t_slot = b.get(t_loc);
 				if(t_slot && t_slot->owner() == Player::Player2)
-					moves->push_front(Move(loc, t_loc));
+					moves.push_front(Move(loc, t_loc));
 			}
 			else
 			{
-				scanMoves(moves, b, loc, 0, -1, false, 1);
+				scanMoves(&moves, b, loc, 0, -1, false, 1);
 
 				t_loc = Location(loc.x()+1,loc.y()-1);
 				t_slot = b.get(t_loc);
 				if(t_slot && t_slot->owner() == Player::Player1)
-					moves->push_front(Move(loc, t_loc));
+					moves.push_front(Move(loc, t_loc));
 
 				t_loc = Location(loc.x()-1,loc.y()-1);
 				t_slot = b.get(t_loc);
 				if(t_slot && t_slot->owner() == Player::Player1)
-					moves->push_front(Move(loc, t_loc));
+					moves.push_front(Move(loc, t_loc));
 			}
 			break;
 		case Piece::Knight:
-			scanMoves(moves, b, loc, 1, 2, true, 1);
-			scanMoves(moves, b, loc, 1, -2, true, 1);
-			scanMoves(moves, b, loc, -1, 2, true, 1);
-			scanMoves(moves, b, loc, -1, -2, true, 1);
+			scanMoves(&moves, b, loc, 1, 2, true, 1);
+			scanMoves(&moves, b, loc, 1, -2, true, 1);
+			scanMoves(&moves, b, loc, -1, 2, true, 1);
+			scanMoves(&moves, b, loc, -1, -2, true, 1);
 			break;
 		case Piece::Bishop:
 			// Diags
-			scanMoves(moves, b, loc, 1, 1);
-			scanMoves(moves, b, loc, 1, -1);
-			scanMoves(moves, b, loc, -1, 1);
-			scanMoves(moves, b, loc, -1, -1);
+			scanMoves(&moves, b, loc, 1, 1);
+			scanMoves(&moves, b, loc, 1, -1);
+			scanMoves(&moves, b, loc, -1, 1);
+			scanMoves(&moves, b, loc, -1, -1);
 
 			// Color change
-			scanMoves(moves, b, loc, 1, 0, false, 1);
-			scanMoves(moves, b, loc, -1, 0, false, 1);
-			scanMoves(moves, b, loc, 0, 1, false, 1);
-			scanMoves(moves, b, loc, 0, -1, false, 1);
+			scanMoves(&moves, b, loc, 1, 0, false, 1);
+			scanMoves(&moves, b, loc, -1, 0, false, 1);
+			scanMoves(&moves, b, loc, 0, 1, false, 1);
+			scanMoves(&moves, b, loc, 0, -1, false, 1);
 			break;
 		case Piece::Rook:
 			// Laterals
-			scanMoves(moves, b, loc, 1, 0);
-			scanMoves(moves, b, loc, -1, 0);
-			scanMoves(moves, b, loc, 0, 1);
-			scanMoves(moves, b, loc, 0, -1);
+			scanMoves(&moves, b, loc, 1, 0);
+			scanMoves(&moves, b, loc, -1, 0);
+			scanMoves(&moves, b, loc, 0, 1);
+			scanMoves(&moves, b, loc, 0, -1);
 			break;
 		case Piece::Queen:
 			// Diags
-			scanMoves(moves, b, loc, 1, 1);
-			scanMoves(moves, b, loc, 1, -1);
-			scanMoves(moves, b, loc, -1, 1);
-			scanMoves(moves, b, loc, -1, -1);
+			scanMoves(&moves, b, loc, 1, 1);
+			scanMoves(&moves, b, loc, 1, -1);
+			scanMoves(&moves, b, loc, -1, 1);
+			scanMoves(&moves, b, loc, -1, -1);
 			
 			// Laterals
-			scanMoves(moves, b, loc, 1, 0);
-			scanMoves(moves, b, loc, -1, 0);
-			scanMoves(moves, b, loc, 0, 1);
-			scanMoves(moves, b, loc, 0, -1);
+			scanMoves(&moves, b, loc, 1, 0);
+			scanMoves(&moves, b, loc, -1, 0);
+			scanMoves(&moves, b, loc, 0, 1);
+			scanMoves(&moves, b, loc, 0, -1);
 			break;
 		case Piece::King:
-			scanMoves(moves, b, loc, 1, 0, true, 1);
-			scanMoves(moves, b, loc, -1, 0, true, 1);
-			scanMoves(moves, b, loc, 0, 1, true, 1);
-			scanMoves(moves, b, loc, 0, -1, true, 1);
+			scanMoves(&moves, b, loc, 1, 0, true, 1);
+			scanMoves(&moves, b, loc, -1, 0, true, 1);
+			scanMoves(&moves, b, loc, 0, 1, true, 1);
+			scanMoves(&moves, b, loc, 0, -1, true, 1);
 			break;
 	}
-
-	return moves;
 }
 
 void BoardSlot::scanMoves(std::list<Move> *vals,
