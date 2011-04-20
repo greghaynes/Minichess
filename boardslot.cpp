@@ -59,6 +59,11 @@ void BoardSlot::validMoves(const Board &b, const Location &loc, std::list<Move> 
 			scanMoves(&moves, b, loc, 1, -2, true, 1);
 			scanMoves(&moves, b, loc, -1, 2, true, 1);
 			scanMoves(&moves, b, loc, -1, -2, true, 1);
+
+			scanMoves(&moves, b, loc, 2, 1, true, 1);
+			scanMoves(&moves, b, loc, 2, -1, true, 1);
+			scanMoves(&moves, b, loc, -2, 1, true, 1);
+			scanMoves(&moves, b, loc, -2, -1, true, 1);
 			break;
 		case Piece::Bishop:
 			// Diags
