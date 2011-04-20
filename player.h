@@ -3,6 +3,8 @@
 
 #include "move.h"
 
+#include <sys/time.h>
+
 class Board;
 
 class Player
@@ -23,7 +25,7 @@ class Player
 
 		Player::Who who(void) const;
 
-		virtual Move move(Board *board) = 0;
+		virtual Move move(Board *board, struct timeval *time_remain) = 0;
 
 	private:
 		Player::Who m_who;

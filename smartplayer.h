@@ -13,7 +13,7 @@ class SmartPlayer
 		SmartPlayer(void);
 		SmartPlayer(Player::Who);
 
-		Move move(Board *b);
+		Move move(Board *b, struct timeval *time_remain);
 
 	private:
 		int negamax(Board *b, Player::Who cur_player, int depth, const Move &move);

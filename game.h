@@ -28,8 +28,9 @@ class Game
 
 	private:
 		int ndxFromPlayer(Player::Who who) const;
-		bool movePlayer(Player::Who);
 		void printTimeLeft(void) const;
+		void timeRemaining(Player::Who who, struct timeval *tv) const;
+		bool movePlayer(Player::Who who);
 
 		Board *m_board;
 		Player *m_players[2];

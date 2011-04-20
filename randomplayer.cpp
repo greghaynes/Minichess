@@ -21,7 +21,7 @@ RandomPlayer::RandomPlayer(Player::Who who)
 	init();
 }
 
-Move RandomPlayer::move(Board *b)
+Move RandomPlayer::move(Board *b, struct timeval *time_remain)
 {
 	std::list<Move> *moves = b->validMoves(who());
 	if(!moves->size())

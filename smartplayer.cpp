@@ -17,7 +17,7 @@ SmartPlayer::SmartPlayer(Player::Who who)
 {
 }
 
-Move SmartPlayer::move(Board *b)
+Move SmartPlayer::move(Board *b, struct timeval *time_remain)
 {
 	int i;
 	for(i=1;i<6;i+=2)
