@@ -67,12 +67,14 @@ bool Game::play(void)
 	Move mv;
 	bool valid_move;
 	struct timeval tv_start, tv_end, tv_elapsed;
+	movePlayer(Player::Player1, false);
+
 	while(isPlaying() && m_board->winner() == Player::None && i < 40)
 	{
-		if(!movePlayer(Player::Player1))
+		if(!movePlayer(Player::Player2))
 			break;
 
-		if(!movePlayer(Player::Player2))
+		if(!movePlayer(Player::Player1))
 			break;
 
 		i++;
@@ -128,13 +130,18 @@ void Game::timeRemaining(Player::Who who, struct timeval *tv) const
 	timersub(tv, &m_expiredTime[ndxFromPlayer(who)], tv);
 }
 
-bool Game::movePlayer(Player::Who who)
+bool Game::movePlayer(Player::Who who, bool subtract_time)
 {
 	struct timeval tv_start, tv_end, tv_elapsed, tv_rem;
 	std::string *str;
 	Move mv;
 
 	timeRemaining(who, &tv_rem);
+
+	// Print board
+	str = m_board->toString();
+	std::cout << *str << "\n";
+	delete str;
 
 	// Perform move
 	gettimeofday(&tv_start, 0);
@@ -144,14 +151,14 @@ bool Game::movePlayer(Player::Who who)
 
 	m_board->move(mv);
 
-	str = m_board->toString();
-	std::cout << *str << "\n";
-	delete str;
 	gettimeofday(&tv_end, 0);
 
 	// Update players time
-	timersub(&tv_end, &tv_start, &tv_elapsed);
-	timeradd(&m_expiredTime[ndxFromPlayer(who)], &tv_elapsed, &m_expiredTime[ndxFromPlayer(who)]);
+	if(subtract_time)
+	{
+		timersub(&tv_end, &tv_start, &tv_elapsed);
+		timeradd(&m_expiredTime[ndxFromPlayer(who)], &tv_elapsed, &m_expiredTime[ndxFromPlayer(who)]);
+	}
 
 	printTimeLeft();
 

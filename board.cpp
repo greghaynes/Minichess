@@ -6,11 +6,13 @@
 
 Board::Board(void)
 	: m_winner(Player::None)
+	, m_pop_count(0)
 {
 }
 
 Board::Board(const Board &other)
 	: m_winner(other.winner())
+	, m_pop_count(other.populationCount(Player::Player1))
 {
 	memcpy(m_board, other.get(Location(0, 0)), sizeof(BoardSlot)*CFG_BOARD_WIDTH*CFG_BOARD_HEIGHT);
 }
@@ -35,6 +37,12 @@ void Board::set(const Location &l, const BoardSlot &p)
 
 void Board::move(Move move)
 {
+	Player::Who victim = get(move.to())->owner();
+	if(victim == Player::Player1)
+		m_pop_count -= get(move.to())->value();
+	else if(victim == Player::Player2)
+		m_pop_count += get(move.to())->value();
+
 	if(get(move.to())->piece() == Piece::King)
 	{
 		// Update winner if capturing king
@@ -44,6 +52,10 @@ void Board::move(Move move)
 	{
 		if(move.to().y() == 5 || move.to().y() == 0)
 		{
+			if(get(move.from())->owner() == Player::Player1)
+				m_pop_count += CFG_PIECEVAL_QUEEN - 1;
+			else
+				m_pop_count -= CFG_PIECEVAL_QUEEN - 1;
 			set(move.to(), BoardSlot(get(move.from())->owner(), Piece::Queen));
 			set(move.from(), BoardSlot(Player::None, Piece::None));
 			return;
@@ -118,17 +130,9 @@ std::string *Board::toString(void) const
 
 int Board::populationCount(Player::Who player) const
 {
-	int score = 0;
-	int i, j;
-	for(i=0;i<CFG_BOARD_WIDTH;++i)
-	{
-		for(j=0;j<CFG_BOARD_HEIGHT;++j)
-		{
-			if(m_board[i][j].owner() == player)
-				score += m_board[i][j].value();
-		}
-	}
-	return score;
+	if(player == Player::Player2)
+		return -m_pop_count;
+	return m_pop_count;
 }
 
 bool Board::isValidLocation(const Location &l) const

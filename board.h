@@ -38,6 +38,7 @@ class Board
 
 		BoardSlot m_board[CFG_BOARD_WIDTH][CFG_BOARD_HEIGHT];
 		Player::Who m_winner;
+		char m_pop_count;
 
 };
 

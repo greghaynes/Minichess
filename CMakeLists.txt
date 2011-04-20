@@ -8,6 +8,7 @@ set(MINICHESS_SRCS
 	player.cpp
 	randomplayer.cpp
 	smartplayer.cpp
+	humanplayer.cpp
 	game.cpp
 	move.cpp
 	location.cpp)

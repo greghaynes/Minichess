@@ -30,7 +30,7 @@ class Game
 		int ndxFromPlayer(Player::Who who) const;
 		void printTimeLeft(void) const;
 		void timeRemaining(Player::Who who, struct timeval *tv) const;
-		bool movePlayer(Player::Who who);
+		bool movePlayer(Player::Who who, bool subtract_time = true);
 
 		Board *m_board;
 		Player *m_players[2];

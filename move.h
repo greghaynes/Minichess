@@ -10,6 +10,9 @@ class Move
 		Move(void);
 		Move(Location from, Location to);
 
+		bool operator==(const Move &other) const;
+		bool operator!=(const Move &other) const;
+
 		Location from(void) const;
 		Location to(void) const;
 

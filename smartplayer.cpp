@@ -20,7 +20,7 @@ SmartPlayer::SmartPlayer(Player::Who who)
 Move SmartPlayer::move(Board *b, struct timeval *time_remain)
 {
 	int i;
-	for(i=1;i<6;i+=2)
+	for(i=1;i<7;i+=2)
 	{
 		if(negamax(b, who(), i, Move()) == CFG_GAMEVAL_WIN)
 			return negamax_move;
