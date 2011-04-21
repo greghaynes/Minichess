@@ -64,7 +64,7 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 	// No movew -> Draw
 	if(moves.size() == 0) {
 		negamax_move = Move();
-		alpha = 0;
+		alpha = CFG_GAMEVAL_LOSE;
 		return alpha;
 	}
 
