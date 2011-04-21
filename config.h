@@ -18,6 +18,8 @@
 #define CFG_GAMEVAL_WIN      1000
 #define CFG_GAMEVAL_LOSE     -1000
 
+#define CFG_INFINITY         10000
+
 namespace Piece
 {
 	enum Type

@@ -20,15 +20,18 @@ SmartPlayer::SmartPlayer(Player::Who who)
 Move SmartPlayer::move(Board *b, struct timeval *time_remain)
 {
 	int i;
+	int alpha, beta;
 	for(i=1;i<7;i+=2)
 	{
-		if(negamax(b, who(), i, Move()) == CFG_GAMEVAL_WIN)
+		alpha = -CFG_INFINITY;
+		beta = CFG_INFINITY;
+		if(negamax(b, who(), i, Move(), alpha, beta) == CFG_GAMEVAL_WIN)
 			return negamax_move;
 	}
 	return negamax_move;
 }
 
-int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move &move)
+int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move &move, int alpha, int beta)
 {
 	Board *tmp_board;
 	std::list<Move> moves;
@@ -38,17 +41,20 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 	if(b->winner() != Player::None) {
 		if(b->winner() == cur_player) {
 			negamax_move = move;
-			return CFG_GAMEVAL_WIN;
+			alpha = CFG_GAMEVAL_WIN;
+			return alpha;
 		} else {
 			negamax_move = move;
-			return CFG_GAMEVAL_LOSE;
+			alpha = CFG_GAMEVAL_LOSE;
+			return alpha;
 		}
 	}
 
 	// Check for max depth
 	if(depth == 0) {
 		negamax_move = Move();
-		return boardEval(b, cur_player);
+		alpha = boardEval(b, cur_player);
+		return alpha;
 	}
 	depth--;
 
@@ -58,7 +64,8 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 	// No movew -> Draw
 	if(moves.size() == 0) {
 		negamax_move = Move();
-		return 0;
+		alpha = 0;
+		return alpha;
 	}
 
 	Move best_move = *(moves.begin());
@@ -68,7 +75,7 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 		tmp_board = new Board(*b);
 		tmp_board->move(*itr);
 
-		tmp_score = - negamax(tmp_board, Player::opponent(cur_player), depth, *itr);
+		tmp_score = - negamax(tmp_board, Player::opponent(cur_player), depth, *itr, -beta, -alpha);
 
 		if(tmp_score > max_score) {
 			best_move = *itr;
@@ -76,12 +83,14 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 		}
 
 		delete tmp_board;
+
+		if(max_score >= beta)
+			break;
 	}
 
 	negamax_move = best_move;
-	return max_score;
-	
-	delete tmp_board;
+	alpha = max_score;
+	return alpha;
 }
 
 int SmartPlayer::boardEval(Board *b, Player::Who cur_player)
