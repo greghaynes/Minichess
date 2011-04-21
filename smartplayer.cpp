@@ -34,30 +34,29 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 	std::list<Move> moves;
 	std::list<Move>::iterator itr;
 
-	if(b->winner() != Player::None)
-	{
-		if(b->winner() == cur_player)
-		{
+	// Check for end state
+	if(b->winner() != Player::None) {
+		if(b->winner() == cur_player) {
 			negamax_move = move;
 			return CFG_GAMEVAL_WIN;
-		}
-		else
-		{
+		} else {
 			negamax_move = move;
 			return CFG_GAMEVAL_LOSE;
 		}
 	}
 
-	if(depth == 0)
-	{
+	// Check for max depth
+	if(depth == 0) {
 		negamax_move = Move();
 		return boardEval(b, cur_player);
 	}
 	depth--;
 
+	// Load moves
 	b->validMoves(cur_player, moves);
-	if(moves.size() == 0)
-	{
+
+	// No movew -> Draw
+	if(moves.size() == 0) {
 		negamax_move = Move();
 		return 0;
 	}
@@ -65,15 +64,13 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 	Move best_move = *(moves.begin());
 	int max_score = CFG_GAMEVAL_LOSE;
 	int tmp_score;
-	for(itr = moves.begin();itr != moves.end();itr++)
-	{
+	for(itr = moves.begin();itr != moves.end();itr++) {
 		tmp_board = new Board(*b);
 		tmp_board->move(*itr);
 
 		tmp_score = - negamax(tmp_board, Player::opponent(cur_player), depth, *itr);
 
-		if(tmp_score > max_score)
-		{
+		if(tmp_score > max_score) {
 			best_move = *itr;
 			max_score = tmp_score;
 		}
