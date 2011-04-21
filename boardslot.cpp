@@ -103,6 +103,11 @@ void BoardSlot::validMoves(const Board &b, const Location &loc, std::list<Move> 
 			scanMoves(&moves, b, loc, -1, 0, true, 1);
 			scanMoves(&moves, b, loc, 0, 1, true, 1);
 			scanMoves(&moves, b, loc, 0, -1, true, 1);
+
+			scanMoves(&moves, b, loc, 1, 1, true, 1);
+			scanMoves(&moves, b, loc, -1, -1, true, 1);
+			scanMoves(&moves, b, loc, 1, -1, true, 1);
+			scanMoves(&moves, b, loc, -1, 1, true, 1);
 			break;
 	}
 }
