@@ -3,6 +3,8 @@
 
 #include "player.h"
 
+#include <list>
+
 class Move;
 
 class SmartPlayer
@@ -18,6 +20,7 @@ class SmartPlayer
 	private:
 		int negamax(Board *b, Player::Who cur_player, int depth, const Move &move, int alpha, int beta);
 		int boardEval(Board *b, Player::Who cur_player);
+		void shuffleMoves(std::list<Move> &moves) const;
 
 };
 

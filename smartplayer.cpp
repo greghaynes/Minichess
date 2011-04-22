@@ -2,10 +2,14 @@
 #include "board.h"
 #include "move.h"
 
-#include <list>
 #include <iostream>
+#include <algorithm>
+#include <numeric>
+
+#include <sys/time.h>
 
 static Move negamax_move;
+static bool has_srand;
 
 SmartPlayer::SmartPlayer(void)
 	: Player()
@@ -68,6 +72,9 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 		return alpha;
 	}
 
+	// Shuffle moves
+	shuffleMoves(moves);
+
 	Move best_move = *(moves.begin());
 	int max_score = CFG_GAMEVAL_LOSE;
 	int tmp_score;
@@ -109,5 +116,29 @@ int SmartPlayer::boardEval(Board *b, Player::Who cur_player)
 		score = b->populationCount(cur_player) - b->populationCount(Player::opponent(cur_player));
 
 	return score;
+}
+
+void SmartPlayer::shuffleMoves(std::list<Move> &moves) const
+{
+	std::list<Move>::iterator itr, swap;
+	Move mv;
+	int ndx, i;
+
+	if(!has_srand)
+	{
+		struct timeval tv;
+		gettimeofday(&tv, 0);
+		srand(tv.tv_usec);
+		has_srand = true;
+	}
+
+	for(itr = moves.begin();itr != moves.end();++itr) {
+		ndx = rand() % moves.size();
+		for(swap=moves.begin(),i=0;i != ndx;++swap,++i);
+		mv = *swap;
+		moves.erase(swap);
+		moves.push_front(mv);
+		
+	}
 }
 
