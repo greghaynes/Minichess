@@ -1,3 +1,5 @@
+Information on MiniChess can be found at http://wiki.cs.pdx.edu/minichess/
+
 To build:
 cmake .
 make
