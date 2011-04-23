@@ -18,8 +18,8 @@ class SmartPlayer
 		Move move(Board *b, struct timeval *time_remain);
 
 	private:
-		int negamax(Board *b, Player::Who cur_player, int depth, const Move &move, int alpha, int beta);
-		int boardEval(Board *b, Player::Who cur_player);
+		float negamax(Board *b, Player::Who cur_player, int depth, const Move &move, float alpha, float beta);
+		float boardEval(Board *b, Player::Who cur_player, std::list<Move> &moves);
 		void shuffleMoves(std::list<Move> &moves) const;
 
 };

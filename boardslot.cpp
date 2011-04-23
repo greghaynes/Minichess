@@ -166,7 +166,7 @@ char BoardSlot::toChar(void) const
 	return ch;
 }
 
-int BoardSlot::value(void) const
+float BoardSlot::value(void) const
 {
 	switch(piece())
 	{

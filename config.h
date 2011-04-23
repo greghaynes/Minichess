@@ -8,17 +8,17 @@
 
 #define NUM_GAMES            1
 
-#define CFG_PIECEVAL_PAWN    1
-#define CFG_PIECEVAL_ROOK    10
-#define CFG_PIECEVAL_KNIGHT  7
-#define CFG_PIECEVAL_BISHOP  7
-#define CFG_PIECEVAL_QUEEN   15
-#define CFG_PIECEVAL_KING    0 
-#define CFG_PIECEVAL_NONE    0
-#define CFG_GAMEVAL_WIN      1000
-#define CFG_GAMEVAL_LOSE     -1000
+#define CFG_PIECEVAL_PAWN    2.0
+#define CFG_PIECEVAL_ROOK    8.0
+#define CFG_PIECEVAL_KNIGHT  5.0
+#define CFG_PIECEVAL_BISHOP  6.0
+#define CFG_PIECEVAL_QUEEN   12.0
+#define CFG_PIECEVAL_KING    0.0
+#define CFG_PIECEVAL_NONE    0.0
+#define CFG_GAMEVAL_WIN      1000.0
+#define CFG_GAMEVAL_LOSE     -1000.0
 
-#define CFG_INFINITY         10000
+#define CFG_INFINITY         10000.0
 
 namespace Piece
 {

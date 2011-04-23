@@ -24,7 +24,7 @@ SmartPlayer::SmartPlayer(Player::Who who)
 Move SmartPlayer::move(Board *b, struct timeval *time_remain)
 {
 	int i;
-	int alpha, beta;
+	float alpha, beta;
 	for(i=1;i<7;i+=2)
 	{
 		alpha = -CFG_INFINITY;
@@ -35,7 +35,7 @@ Move SmartPlayer::move(Board *b, struct timeval *time_remain)
 	return negamax_move;
 }
 
-int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move &move, int alpha, int beta)
+float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move &move, float alpha, float beta)
 {
 	Board *tmp_board;
 	std::list<Move> moves;
@@ -57,7 +57,7 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 	// Check for max depth
 	if(depth == 0) {
 		negamax_move = Move();
-		alpha = boardEval(b, cur_player);
+		alpha = boardEval(b, cur_player, moves);
 		return alpha;
 	}
 	depth--;
@@ -76,8 +76,8 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 	shuffleMoves(moves);
 
 	Move best_move = *(moves.begin());
-	int max_score = CFG_GAMEVAL_LOSE;
-	int tmp_score;
+	float max_score = CFG_GAMEVAL_LOSE;
+	float tmp_score;
 	for(itr = moves.begin();itr != moves.end();itr++) {
 		tmp_board = new Board(*b);
 		tmp_board->move(*itr);
@@ -100,10 +100,10 @@ int SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move
 	return alpha;
 }
 
-int SmartPlayer::boardEval(Board *b, Player::Who cur_player)
+float SmartPlayer::boardEval(Board *b, Player::Who cur_player, std::list<Move> &moves)
 {
 	Player::Who tmp_winner;
-	int score;
+	float score;
 	tmp_winner = b->winner();
 	if(tmp_winner != Player::None)
 	{
@@ -113,7 +113,10 @@ int SmartPlayer::boardEval(Board *b, Player::Who cur_player)
 			score = CFG_GAMEVAL_LOSE;
 	}
 	else
+	{
 		score = b->populationCount(cur_player) - b->populationCount(Player::opponent(cur_player));
+		score += moves.size() / 100;
+	}
 
 	return score;
 }
