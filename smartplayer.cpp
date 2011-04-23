@@ -45,20 +45,17 @@ float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Mo
 	if(b->winner() != Player::None) {
 		if(b->winner() == cur_player) {
 			negamax_move = move;
-			alpha = CFG_GAMEVAL_WIN;
-			return alpha;
+			return CFG_GAMEVAL_WIN;
 		} else {
 			negamax_move = move;
-			alpha = CFG_GAMEVAL_LOSE;
-			return alpha;
+			return CFG_GAMEVAL_LOSE;
 		}
 	}
 
 	// Check for max depth
 	if(depth == 0) {
 		negamax_move = Move();
-		alpha = boardEval(b, cur_player, moves);
-		return alpha;
+		return boardEval(b, cur_player, moves);
 	}
 	depth--;
 
@@ -67,13 +64,13 @@ float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Mo
 
 	// No movew -> Draw
 	if(moves.size() == 0) {
+		std::cout << "No moves!\n";
 		negamax_move = Move();
-		alpha = CFG_GAMEVAL_LOSE;
-		return alpha;
+		return CFG_GAMEVAL_LOSE;
 	}
 
 	// Shuffle moves
-	shuffleMoves(moves);
+	//shuffleMoves(moves);
 
 	Move best_move = *(moves.begin());
 	float max_score = CFG_GAMEVAL_LOSE;
@@ -96,8 +93,7 @@ float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Mo
 	}
 
 	negamax_move = best_move;
-	alpha = max_score;
-	return alpha;
+	return max_score;
 }
 
 float SmartPlayer::boardEval(Board *b, Player::Who cur_player, std::list<Move> &moves)
@@ -119,29 +115,5 @@ float SmartPlayer::boardEval(Board *b, Player::Who cur_player, std::list<Move> &
 	}
 
 	return score;
-}
-
-void SmartPlayer::shuffleMoves(std::list<Move> &moves) const
-{
-	std::list<Move>::iterator itr, swap;
-	Move mv;
-	int ndx, i;
-
-	if(!has_srand)
-	{
-		struct timeval tv;
-		gettimeofday(&tv, 0);
-		srand(tv.tv_usec);
-		has_srand = true;
-	}
-
-	for(itr = moves.begin();itr != moves.end();++itr) {
-		ndx = rand() % moves.size();
-		for(swap=moves.begin(),i=0;i != ndx;++swap,++i);
-		mv = *swap;
-		moves.erase(swap);
-		moves.push_front(mv);
-		
-	}
 }
 
