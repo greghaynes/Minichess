@@ -59,13 +59,6 @@ Board *BoardGenerator::fromString(const char *str)
 Board *BoardGenerator::matchStart(void)
 {
 	return BoardGenerator::fromString(
-		"k...r\n"
-		"pnq.p\n"
-		"R..p.\n"
-		".....\n"
-		"B..PP\n"
-		".N.QK\n");
-	return BoardGenerator::fromString(
 		"kqbnr\n"
 		"ppppp\n"
 		".....\n"

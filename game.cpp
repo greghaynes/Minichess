@@ -74,6 +74,9 @@ bool Game::play(void)
 		if(!movePlayer(Player::Player2))
 			break;
 
+		if(m_board->winner() != Player::None)
+			break;
+
 		if(!movePlayer(Player::Player1))
 			break;
 
