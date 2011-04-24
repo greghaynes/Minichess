@@ -1,4 +1,5 @@
 #include "board.h"
+#include "zobrist.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -7,12 +8,20 @@
 Board::Board(void)
 	: m_winner(Player::None)
 	, m_pop_count(0)
+	, m_zobrist_key(0)
 {
+	int i, j;
+	for(i = 0;i<CFG_BOARD_WIDTH;++i)
+	{
+		for(j=0;j<CFG_BOARD_HEIGHT;++j)
+			Zobrist::key(m_board[i][j], Location(j, i), m_zobrist_key);
+	}
 }
 
 Board::Board(const Board &other)
 	: m_winner(other.winner())
 	, m_pop_count(other.populationCount(Player::Player1))
+	, m_zobrist_key(other.zobristKey())
 {
 	memcpy(m_board, other.get(Location(0, 0)), sizeof(BoardSlot)*CFG_BOARD_WIDTH*CFG_BOARD_HEIGHT);
 }
@@ -30,6 +39,11 @@ const BoardSlot *Board::get(const Location &l) const
 
 void Board::set(const Location &l, const BoardSlot &p)
 {
+
+	// Update key
+	Zobrist::key(*get(l), l, m_zobrist_key);
+	Zobrist::key(p, l, m_zobrist_key);
+
 	if(!isValidLocation(l))
 		return;
 	m_board[l.x()][l.y()] = p;
@@ -133,6 +147,11 @@ int Board::populationCount(Player::Who player) const
 	if(player == Player::Player2)
 		return -m_pop_count;
 	return m_pop_count;
+}
+
+uint64_t Board::zobristKey(void) const
+{
+	return m_zobrist_key;
 }
 
 bool Board::isValidLocation(const Location &l) const

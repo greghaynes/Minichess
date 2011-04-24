@@ -10,11 +10,9 @@ class Zobrist
 {
 
 	public:
-		Zobrist();
-
-		void key(const BoardSlot &slot,
-		         Location location,
-		         uint64_t &key) const;
+		static void key(const BoardSlot &slot,
+	                Location location,
+	                uint64_t &key);
 
 };
 

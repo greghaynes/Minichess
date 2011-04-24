@@ -10,6 +10,8 @@
 #include <list>
 #include <string>
 
+#include <stdint.h>
+
 class Board
 {
 
@@ -33,12 +35,15 @@ class Board
 
 		int populationCount(Player::Who player) const;
 
+		uint64_t zobristKey(void) const;
+
 	private:
 		bool isValidLocation(const Location &l) const;
 
 		BoardSlot m_board[CFG_BOARD_WIDTH][CFG_BOARD_HEIGHT];
 		Player::Who m_winner;
 		char m_pop_count;
+		uint64_t m_zobrist_key;
 
 };
 

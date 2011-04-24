@@ -4,13 +4,9 @@
 #include <sys/time.h>
 #include <stdlib.h>
 
-Zobrist::Zobrist()
-{
-}
-
 void Zobrist::key(const BoardSlot &slot,
                   Location location,
-                  uint64_t &key) const
+                  uint64_t &key)
 {
 	int type_ndx = 0;
 	if(slot.owner()==Player::Player2)
