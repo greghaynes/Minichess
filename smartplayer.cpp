@@ -25,7 +25,7 @@ Move SmartPlayer::move(Board *b, struct timeval *time_remain)
 {
 	int i;
 	float alpha, beta;
-	for(i=1;i<8;i+=2)
+	for(i=1;i<7;i+=2)
 	{
 		alpha = -CFG_INFINITY;
 		beta = CFG_INFINITY;

@@ -11,7 +11,8 @@ set(MINICHESS_SRCS
 	humanplayer.cpp
 	game.cpp
 	move.cpp
-	location.cpp)
+	location.cpp
+	zobrist.cpp)
 
 add_executable(minichess ${MINICHESS_SRCS})
 

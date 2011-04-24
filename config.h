@@ -8,11 +8,11 @@
 
 #define NUM_GAMES            1
 
-#define CFG_PIECEVAL_PAWN    2.0
-#define CFG_PIECEVAL_ROOK    8.0
-#define CFG_PIECEVAL_KNIGHT  5.0
-#define CFG_PIECEVAL_BISHOP  6.0
-#define CFG_PIECEVAL_QUEEN   12.0
+#define CFG_PIECEVAL_PAWN    1.0
+#define CFG_PIECEVAL_ROOK    6.0
+#define CFG_PIECEVAL_KNIGHT  4.0
+#define CFG_PIECEVAL_BISHOP  5.0
+#define CFG_PIECEVAL_QUEEN   13.0
 #define CFG_PIECEVAL_KING    0.0
 #define CFG_PIECEVAL_NONE    0.0
 #define CFG_GAMEVAL_WIN      1000.0
@@ -24,13 +24,13 @@ namespace Piece
 {
 	enum Type
 	{
-		None,
-		Pawn,
-		Rook,
-		Knight,
-		Bishop,
-		Queen,
-		King
+		None = 0,
+		Pawn = 1,
+		Rook = 2,
+		Knight = 3,
+		Bishop = 4,
+		Queen = 5,
+		King = 6
 	};
 }
 
