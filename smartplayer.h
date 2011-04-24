@@ -2,6 +2,7 @@
 #define SMART_PLAYER_H
 
 #include "player.h"
+#include "hashtable.h"
 
 #include <list>
 
