@@ -25,21 +25,6 @@ void printWinner(const Board &b)
 
 int main(int argc, char **argv)
 {
-#if 0
-	Board *b = new Board;
-	b->set(Location(0, 1), BoardSlot(Player::Player2, Piece::Pawn));
-	std::string *str = b->toString();
-	std::cout << *str;
-	std::cout << "\n";
-	delete str;
-	b->move(Move(Location(0, 1), Location(0, 0)));
-	str = b->toString();
-	std::cout << *str;
-	delete str;
-	delete b;
-	return 0;
-#endif
-
 	Game g(BoardGenerator::matchStart());
 	g.setPlayer(new HumanPlayer(Player::Player1));
 	g.setPlayer(new SmartPlayer(Player::Player2));
