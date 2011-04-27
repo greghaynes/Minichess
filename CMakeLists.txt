@@ -10,9 +10,11 @@ set(MINICHESS_SRCS
 	smartplayer.cpp
 	humanplayer.cpp
 	game.cpp
+	imcsgame.cpp
 	move.cpp
 	location.cpp
-	zobrist.cpp)
+	zobrist.cpp
+	transposetable.cpp)
 
 add_executable(minichess ${MINICHESS_SRCS})
 
