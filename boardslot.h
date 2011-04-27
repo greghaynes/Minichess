@@ -14,6 +14,7 @@ class BoardSlot
 {
 
 	public:
+		explicit BoardSlot(char ch);
 		BoardSlot(Player::Who owner=Player::None, Piece::Type piece=Piece::None);
 
 		Piece::Type piece(void) const;

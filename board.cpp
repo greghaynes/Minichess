@@ -127,6 +127,11 @@ Player::Who Board::winner(void) const
 	return m_winner;
 }
 
+void Board::setWinner(Player::Who who)
+{
+	m_winner = who;
+}
+
 std::string *Board::toString(void) const
 {
 	std::string *ret = new std::string;
@@ -147,6 +152,11 @@ int Board::populationCount(Player::Who player) const
 	if(player == Player::Player2)
 		return -m_pop_count;
 	return m_pop_count;
+}
+
+void Board::setPopulationCount(int value)
+{
+	m_pop_count = value;
 }
 
 uint64_t Board::zobristKey(void) const

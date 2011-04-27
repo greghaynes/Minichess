@@ -30,10 +30,13 @@ class Board
 		void playerPieces(Player::Who player, std::list<Location> &location) const;
 
 		Player::Who winner(void) const;
+		void setWinner(Player::Who who);
 
 		std::string *toString(void) const;
 
 		int populationCount(Player::Who player) const;
+
+		void setPopulationCount(int value);
 
 		uint64_t zobristKey(void) const;
 

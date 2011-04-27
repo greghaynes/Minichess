@@ -1,6 +1,11 @@
 #include "boardslot.h"
 #include "board.h"
 
+BoardSlot::BoardSlot(char ch)
+	: m_state(ch)
+{
+}
+
 BoardSlot::BoardSlot(Player::Who owner, Piece::Type piece)
 {
 	m_state = (char)piece;

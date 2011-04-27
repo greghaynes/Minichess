@@ -70,23 +70,34 @@ float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Mo
 	}
 
 	// Shuffle moves
+	// Not worth it
 	//shuffleMoves(moves);
 
 	Move best_move = *(moves.begin());
 	float max_score = CFG_GAMEVAL_LOSE;
 	float tmp_score;
-	for(itr = moves.begin();itr != moves.end();itr++) {
-		tmp_board = new Board(*b);
-		tmp_board->move(*itr);
 
-		tmp_score = - negamax(tmp_board, Player::opponent(cur_player), depth, *itr, -beta, -alpha);
+	int prev_pop_count;
+	BoardSlot prev_from, prev_to;
+	Player::Who prev_win;
+	for(itr = moves.begin();itr != moves.end();itr++) {
+		prev_from = *b->get(itr->from());
+		prev_to = *b->get(itr->to());
+		prev_pop_count = b->populationCount(Player::Player1);
+		prev_win = b->winner();
+		b->move(*itr);
+
+		tmp_score = - negamax(b, Player::opponent(cur_player), depth, *itr, -beta, -alpha);
 
 		if(tmp_score > max_score) {
 			best_move = *itr;
 			max_score = tmp_score;
 		}
 
-		delete tmp_board;
+		b->set(itr->from(), prev_from);
+		b->set(itr->to(), prev_to);
+		b->setPopulationCount(prev_pop_count);
+		b->setWinner(prev_win);
 
 		if(max_score >= beta)
 			break;

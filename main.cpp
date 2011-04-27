@@ -3,6 +3,7 @@
 #include "randomplayer.h"
 #include "smartplayer.h"
 #include "boardslot.h"
+#include "game.h"
 #include "imcsgame.h"
 
 #include <iostream>
@@ -25,9 +26,11 @@ void printWinner(const Board &b)
 
 int main(int argc, char **argv)
 {
-	ImcsGame g;
+	Game g(BoardGenerator::matchStart());
 	g.setPlayer(new SmartPlayer(Player::Player2));
-	g.play("sasquatch", "p@ssw0rd", '?');
+	g.setPlayer(new RandomPlayer(Player::Player1));
+	g.play();
+	printWinner(*g.board());
 
 	return 0;
 }
