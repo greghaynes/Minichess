@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 {
 	Game g(BoardGenerator::matchStart());
 	g.setPlayer(new SmartPlayer(Player::Player2));
-	g.setPlayer(new RandomPlayer(Player::Player1));
+	g.setPlayer(new HumanPlayer(Player::Player1));
 	g.play();
 	printWinner(*g.board());
 

@@ -81,6 +81,10 @@ float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Mo
 	BoardSlot prev_from, prev_to;
 	Player::Who prev_win;
 	for(itr = moves.begin();itr != moves.end();itr++) {
+#if CFG_SLOW_CHECK
+		tmp_board = new Board(*b);
+#endif
+
 		prev_from = *b->get(itr->from());
 		prev_to = *b->get(itr->to());
 		prev_pop_count = b->populationCount(Player::Player1);
@@ -98,6 +102,13 @@ float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Mo
 		b->set(itr->to(), prev_to);
 		b->setPopulationCount(prev_pop_count);
 		b->setWinner(prev_win);
+
+#if CFG_SLOW_CHECK
+		if(*tmp_board != *b) {
+			std::cout << "do/undo failure!\n";
+			exit(1);
+		}
+#endif
 
 		if(max_score >= beta)
 			break;

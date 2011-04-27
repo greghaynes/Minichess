@@ -20,6 +20,8 @@
 
 #define CFG_INFINITY         10000.0
 
+#define CFG_SLOW_CHECK       0
+
 namespace Piece
 {
 	enum Type

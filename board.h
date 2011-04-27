@@ -20,6 +20,9 @@ class Board
 		Board(const Board &other);
 		~Board(void);
 
+		bool operator==(const Board &other) const;
+		bool operator!=(const Board &other) const;
+
 		const BoardSlot *get(const Location &l) const;
 		void set(const Location &l, const BoardSlot &p);
 

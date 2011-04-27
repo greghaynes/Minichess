@@ -30,6 +30,23 @@ Board::~Board(void)
 {
 }
 
+bool Board::operator==(const Board &other) const
+{
+	int i, j;
+	for(i=0;i<CFG_BOARD_WIDTH;i++) {
+		for(j=0;j<CFG_BOARD_HEIGHT;j++) {
+			if(m_board[i][j] != *other.get(Location(i, j)))
+				return false;
+		}
+	}
+	return true;
+}
+
+bool Board::operator!=(const Board &other) const
+{
+	return !(*this == other);
+}
+
 const BoardSlot *Board::get(const Location &l) const
 {
 	if(!isValidLocation(l))

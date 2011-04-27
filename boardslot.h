@@ -17,6 +17,9 @@ class BoardSlot
 		explicit BoardSlot(char ch);
 		BoardSlot(Player::Who owner=Player::None, Piece::Type piece=Piece::None);
 
+		bool operator==(const BoardSlot &other) const;
+		bool operator!=(const BoardSlot &other) const;
+
 		Piece::Type piece(void) const;
 		Player::Who owner(void) const;
 

@@ -12,6 +12,16 @@ BoardSlot::BoardSlot(Player::Who owner, Piece::Type piece)
 	m_state |= (char)(owner<<4);
 }
 
+bool BoardSlot::operator==(const BoardSlot &other) const
+{
+	return piece() == other.piece() && owner() == other.owner();
+}
+
+bool BoardSlot::operator!=(const BoardSlot &other) const
+{
+	return !(*this == other);
+}
+
 Piece::Type BoardSlot::piece(void) const
 {
 	return (Piece::Type)(m_state & 0xF);
