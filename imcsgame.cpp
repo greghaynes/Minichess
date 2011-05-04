@@ -59,17 +59,62 @@ void ImcsGame::setPlayer(Player *p)
 void ImcsGame::play(const char *username, const char *pass, char piece)
 {
 	char buff[512];
+	char buff_2[512];
 
 	if(read(m_sock_fd, buff, 511) == -1) {
 		perror("Reading from imcs");
 		return;
 	}
 
-	if(strncmp("100 imcs 2.4", buff, 12)) {
-		printf("Non IMCS or incorrect IMCS version. Received %s", buff);
+	if(strncmp("100 imcs 2.5", buff, 12)) {
+		fprintf(stderr, "Non IMCS or incorrect IMCS version. Received %s", buff);
 		return;
-	}	
-	
+	}
 	printf("Connected to valid IMCS\n");
+
+	printf("Logging in...");
+	fflush(stdout);
+	sprintf(buff, "me %s %s\n", username, pass);
+	if(write(m_sock_fd, buff, strlen(buff)) == -1) {
+		perror("Sending login request");
+		return;
+	}
+
+	if(read(m_sock_fd, buff, 511) == -1) {
+		perror("Reading from imcs after me request");
+		return;
+	}
+
+	sprintf(buff_2, "201 hello %s", username);
+	if(strncmp(buff_2, buff, strlen(buff_2))) {
+		fprintf(stderr, "Invalid login");
+		return;
+	}
+	printf("Success\n");
+	
+	printf("Offering game\n");
+	sprintf(buff, "offer %c\n", piece);
+	if(write(m_sock_fd, buff, strlen(buff)) == -1) {
+		perror("Sending offer request");
+		return;
+	}
+
+	if(read(m_sock_fd, buff, 511) == -1) {
+		perror("Reading from imcs after offer request");
+		return;
+	}
+
+	strcpy(buff_2, "103");
+	if(strncmp(buff_2, buff, strlen(buff_2))) {
+		fprintf(stderr, "Invalid offer acceptance, received: %s\n", buff);
+		return;
+	}
+	
+	printf("Waiting for game acceptance...\n");
+
+	if(read(m_sock_fd, buff, 511) == -1) {
+		perror("Reading from imcs after offer accepted");
+		return;
+	}
 }
 

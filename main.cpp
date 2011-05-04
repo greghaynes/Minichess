@@ -24,14 +24,26 @@ void printWinner(const Board &b)
 	std::cout << "wins!\n";
 }
 
+
+int main(int argc, char **argv)
+{
+	ImcsGame g;
+	g.setPlayer(new SmartPlayer(Player::Player1));
+	g.play("sasquatch", "p@ssw0rd");
+
+	return 0;
+}
+
+#if 0
 int main(int argc, char **argv)
 {
 	Game g(BoardGenerator::matchStart());
-	g.setPlayer(new SmartPlayer(Player::Player2));
-	g.setPlayer(new HumanPlayer(Player::Player1));
+	g.setPlayer(new RandomPlayer(Player::Player2));
+	g.setPlayer(new SmartPlayer(Player::Player1));
 	g.play();
 	printWinner(*g.board());
 
 	return 0;
 }
+#endif
 

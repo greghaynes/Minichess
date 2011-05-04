@@ -58,8 +58,8 @@ void Board::set(const Location &l, const BoardSlot &p)
 {
 
 	// Update key
-	Zobrist::key(*get(l), l, m_zobrist_key);
-	Zobrist::key(p, l, m_zobrist_key);
+//	Zobrist::key(*get(l), l, m_zobrist_key);
+//	Zobrist::key(p, l, m_zobrist_key);
 
 	if(!isValidLocation(l))
 		return;
