@@ -22,6 +22,8 @@
 
 #define CFG_SLOW_CHECK       0
 
+#define CFG_T_TABLE_SIZE     (2 << 27)
+
 namespace Piece
 {
 	enum Type

@@ -8,8 +8,29 @@ TransposeTable::~TransposeTable()
 {
 }
 
+void TransposeTable::getUsableEntry(const Board &b,
+                                    unsigned char depth,
+                                    float alpha,
+                                    float beta,
+                                    BoardTTEntry **entry)
+{
+	BoardTTEntry *t_entry;
+	getEntry(b, &t_entry);
+	*entry = 0;
+	if(!t_entry)
+		return;
+
+	if(t_entry->depth < depth)
+		return;
+
+	if(t_entry->negamax < alpha || t_entry->negamax > beta)
+		return;
+	
+	*entry = t_entry;
+}
+
 void TransposeTable::getEntry(const Board &b,
-                              const BoardTTEntry **entry)
+                              BoardTTEntry **entry)
 {
 	BoardTTEntry *t_entry = m_table.get(b.zobristKey());
 	if(!t_entry) {
@@ -24,16 +45,14 @@ void TransposeTable::getEntry(const Board &b,
 }
 
 void TransposeTable::insert(const Board &b, float negamax,
-                            float alpha, float beta)
+                            float alpha, float beta, unsigned char depth)
 {
-	BoardTTEntry *entry = new BoardTTEntry;
+	BoardTTEntry *entry = m_table.get(b.zobristKey());
 
 	entry->zobrist_key = b.zobristKey();
 	entry->alpha = alpha;
 	entry->beta = beta;
 	entry->negamax = negamax;
-
-	m_entries.push_front(entry);
-	m_table.set(b.zobristKey(), entry);
+	entry->depth = depth;
 }
 

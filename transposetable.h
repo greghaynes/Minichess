@@ -9,6 +9,7 @@
 struct BoardTTEntry
 {
 	uint64_t zobrist_key;
+	unsigned char depth;
 	float alpha;
 	float beta;
 	float negamax;
@@ -21,11 +22,18 @@ class TransposeTable
 		TransposeTable(void);
 		~TransposeTable(void);
 
+		void getUsableEntry(const Board &b,
+		                    unsigned char needed_depth,
+		                    float cur_alpha,
+		                    float cur_beta,
+		                    BoardTTEntry **entry);
+					
+
 		void getEntry(const Board &b,
-		              const BoardTTEntry **entry);
+		              BoardTTEntry **entry);
 
 		void insert(const Board &b, float negamax,
-		            float alpha, float beta);
+		            float alpha, float beta, unsigned char depth);
 
 	private:
 		Hashtable<BoardTTEntry> m_table;

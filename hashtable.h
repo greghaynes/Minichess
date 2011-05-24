@@ -14,19 +14,17 @@ class Hashtable
 		Hashtable();
 		~Hashtable();
 
-		T *get(uint64_t key) const;
-		void set(uint64_t key, T *value);
+		T *get(uint64_t key);
 
 	private:
-		T **table;
+		T table[CFG_T_TABLE_SIZE];
 
 };
 
 template <class T>
 Hashtable<T>::Hashtable()
 {
-	table = new T*[2 << 16];
-	memset(table, 0, sizeof(T*)*(2<<16));
+	memset(table, 0, sizeof(T)*(CFG_T_TABLE_SIZE));
 }
 
 template <class T>
@@ -36,15 +34,9 @@ Hashtable<T>::~Hashtable()
 }
 
 template <class T>
-T *Hashtable<T>::get(uint64_t key) const
+T *Hashtable<T>::get(uint64_t key)
 {
-	return table[(short)key];
-}
-
-template <class T>
-void Hashtable<T>::set(uint64_t key, T *value)
-{
-	table[(short)key] = value;
+	return &table[key%CFG_T_TABLE_SIZE];
 }
 
 #endif
