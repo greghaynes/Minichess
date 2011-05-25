@@ -60,6 +60,8 @@ void ImcsGame::play(const char *username, const char *pass, char piece)
 {
 	char buff[512];
 	char buff_2[512];
+	char *itr, *end;
+	int len;
 
 	if(read(m_sock_fd, buff, 511) == -1) {
 		perror("Reading from imcs");
@@ -90,7 +92,56 @@ void ImcsGame::play(const char *username, const char *pass, char piece)
 		fprintf(stderr, "Invalid login");
 		return;
 	}
-	printf("Success\n");
+	printf("Login success\n");
+
+	// Try to join an available game
+	sprintf(buff, "list\n");
+	if(write(m_sock_fd, buff, strlen(buff)) == -1) {
+		perror("Listing available games");
+		return;
+	}
+
+	len = 0;
+	do {
+		len += read(m_sock_fd, &buff[len], 511);
+		if(len == -1) {
+			perror("Reading from imcs after list request");
+			return;
+		}
+	} while(!strstr(buff, "\n."));
+	buff[len] = '\0';
+
+	if(strncmp(buff, "211", 3)) {
+		fprintf(stderr, "Invalid game list response\n");
+		return;
+	}
+
+	itr = buff;
+	while(*itr && *itr != '\n') ++itr;
+	if(!*itr || !*(++itr)) {
+		fprintf(stderr, "Shouldnt be here...\n");
+		return;
+	}
+	if(*itr == ' ') {
+		++itr;
+		end = itr;
+		while(*end && *end != ' ') ++end;
+		*end = '\0';
+
+		printf("Found game %s, accepting\n", itr);
+		sprintf(buff, "accept %s\n", itr);
+		
+		if(write(m_sock_fd, buff, strlen(buff)) == -1) {
+			perror("Sending accept request");
+			return;
+		}
+
+		startPlaying();
+
+		return;
+	}
+
+	printf("No valid games found\n");
 	
 	printf("Offering game\n");
 	sprintf(buff, "offer %c\n", piece);
@@ -110,11 +161,14 @@ void ImcsGame::play(const char *username, const char *pass, char piece)
 		return;
 	}
 	
-	printf("Waiting for game acceptance...\n");
+	startPlaying();
+}
 
-	if(read(m_sock_fd, buff, 511) == -1) {
-		perror("Reading from imcs after offer accepted");
-		return;
-	}
+void ImcsGame::startPlaying(void)
+{
+	char buff[512];
+
+	printf("Waiting for game acceptance...\n");
+	
 }
 

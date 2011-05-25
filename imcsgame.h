@@ -15,6 +15,8 @@ class ImcsGame
 		void play(const char *username, const char *pass, char piece = '?');
 
 	private:
+		void startPlaying(void);
+
 		Player *m_player;
 		int m_sock_fd;
 		bool m_valid_conn;

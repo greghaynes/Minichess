@@ -25,18 +25,18 @@ void printWinner(const Board &b)
 }
 
 
-#if 0
+#if 1
 int main(int argc, char **argv)
 {
 	ImcsGame g;
 	g.setPlayer(new SmartPlayer(Player::Player1));
-	g.play("sasquatch", "p@ssw0rd");
+	g.play("sasquatch1", "p@ssw0rd");
 
 	return 0;
 }
 #endif
 
-#if 1
+#if 0
 int main(int argc, char **argv)
 {
 	Game g(BoardGenerator::matchStart());
