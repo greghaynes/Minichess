@@ -1,8 +1,10 @@
 #include "imcsgame.h"
+#include "smartplayer.h"
 
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netdb.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -38,12 +40,16 @@ ImcsGame::ImcsGame(void)
 	}
 
 	m_valid_conn = true;
+	m_sock_ffd = fdopen(m_sock_fd, "r+");
 }
 
 ImcsGame::~ImcsGame(void)
 {
 	if(m_sock_fd > 0)
+	{
 		close(m_sock_fd);
+		fclose(m_sock_ffd);
+	}
 
 	if(m_player)
 		delete m_player;
@@ -56,21 +62,26 @@ void ImcsGame::setPlayer(Player *p)
 	m_player = p;
 }
 
+#define SAFE_FREE(x) if(x) free(x);
+#define DO_RETURN SAFE_FREE(buff)\
+                     return;
+
 void ImcsGame::play(const char *username, const char *pass, char piece)
 {
-	char buff[512];
+	char *buff = 0;
 	char buff_2[512];
 	char *itr, *end;
-	int len;
+	size_t len = 0;
+	int game_id;
 
-	if(read(m_sock_fd, buff, 511) == -1) {
+	if(getline(&buff, &len, m_sock_ffd) == -1) {
 		perror("Reading from imcs");
-		return;
+		DO_RETURN
 	}
 
 	if(strncmp("100 imcs 2.5", buff, 12)) {
 		fprintf(stderr, "Non IMCS or incorrect IMCS version. Received %s", buff);
-		return;
+		DO_RETURN
 	}
 	printf("Connected to valid IMCS\n");
 
@@ -79,96 +90,139 @@ void ImcsGame::play(const char *username, const char *pass, char piece)
 	sprintf(buff, "me %s %s\n", username, pass);
 	if(write(m_sock_fd, buff, strlen(buff)) == -1) {
 		perror("Sending login request");
-		return;
+		DO_RETURN
 	}
 
-	if(read(m_sock_fd, buff, 511) == -1) {
+	if(getline(&buff, &len, m_sock_ffd) == -1) {
 		perror("Reading from imcs after me request");
-		return;
+		DO_RETURN
 	}
 
 	sprintf(buff_2, "201 hello %s", username);
 	if(strncmp(buff_2, buff, strlen(buff_2))) {
 		fprintf(stderr, "Invalid login");
-		return;
+		DO_RETURN
 	}
 	printf("Login success\n");
 
-	// Try to join an available game
-	sprintf(buff, "list\n");
-	if(write(m_sock_fd, buff, strlen(buff)) == -1) {
-		perror("Listing available games");
-		return;
-	}
-
-	len = 0;
-	do {
-		len += read(m_sock_fd, &buff[len], 511);
-		if(len == -1) {
-			perror("Reading from imcs after list request");
-			return;
-		}
-	} while(!strstr(buff, "\n."));
-	buff[len] = '\0';
-
-	if(strncmp(buff, "211", 3)) {
-		fprintf(stderr, "Invalid game list response\n");
-		return;
-	}
-
-	itr = buff;
-	while(*itr && *itr != '\n') ++itr;
-	if(!*itr || !*(++itr)) {
-		fprintf(stderr, "Shouldnt be here...\n");
-		return;
-	}
-	if(*itr == ' ') {
-		++itr;
-		end = itr;
-		while(*end && *end != ' ') ++end;
-		*end = '\0';
-
-		printf("Found game %s, accepting\n", itr);
-		sprintf(buff, "accept %s\n", itr);
-		
+	if(!m_player) {
+		// Try to join an available game
+		sprintf(buff, "list\n");
 		if(write(m_sock_fd, buff, strlen(buff)) == -1) {
-			perror("Sending accept request");
-			return;
+			perror("Listing available games");
+			DO_RETURN
 		}
 
-		startPlaying();
+		if(getline(&buff, &len, m_sock_ffd) == -1) {
+			perror("Reading from imcs after list request");
+			DO_RETURN
+		}
 
-		return;
+		if(getline(&buff, &len, m_sock_ffd) == -1) {
+			perror("Reading from imcs second time after list request");
+			DO_RETURN
+		}
+		if(buff[0] != '.') {
+			sscanf(buff, " %d", &game_id);
+			printf("Found game %d, accepting\n", game_id);
+			sprintf(buff_2, "accept %d\n", game_id);
+
+			do {
+				if(getline(&buff, &len, m_sock_ffd) == -1) {
+					perror("Reading from imcs in loop after list request");
+					DO_RETURN
+				}
+			} while(buff[0] != '.');
+			
+			if(write(m_sock_fd, buff_2, strlen(buff_2)) == -1) {
+				perror("Sending accept request");
+				DO_RETURN
+			}
+
+			startPlaying();
+			DO_RETURN
+		} else {
+			printf("No available games found.\n");
+		}
 	}
-
-	printf("No valid games found\n");
 	
 	printf("Offering game\n");
 	sprintf(buff, "offer %c\n", piece);
 	if(write(m_sock_fd, buff, strlen(buff)) == -1) {
 		perror("Sending offer request");
-		return;
+		DO_RETURN
 	}
 
-	if(read(m_sock_fd, buff, 511) == -1) {
-		perror("Reading from imcs after offer request");
-		return;
-	}
-
-	strcpy(buff_2, "103");
-	if(strncmp(buff_2, buff, strlen(buff_2))) {
-		fprintf(stderr, "Invalid offer acceptance, received: %s\n", buff);
-		return;
-	}
-	
 	startPlaying();
+	DO_RETURN
 }
+
+#undef DO_RETURN
+#define DO_RETURN SAFE_FREE(buff)\
+                     SAFE_FREE(p)\
+                     return;
 
 void ImcsGame::startPlaying(void)
 {
-	char buff[512];
+	char *buff = 0;
+	char *itr, *end;
+	int game_id;
+	size_t len;
+	int w_min, w_sec, b_min, b_sec;
+	char color;
+	Player *p = 0;
+	bool my_move = false;
 
 	printf("Waiting for game acceptance...\n");
+
+	if(getline(&buff, &len, m_sock_ffd) == -1) {
+                perror("Reading from imcs on game start");
+		DO_RETURN
+        }
 	
+	if(EOF == sscanf(buff, "%d %c %d:%d %d:%d", &game_id, &color, &w_min, &w_sec, &b_min, &b_sec)) {
+		perror("Parsing game accepted id string");
+		DO_RETURN
+	}
+
+	printf("Accepted, playing game id %d\n", game_id);
+
+	switch(color) {
+		case 'W':
+			p = new SmartPlayer(Player::Player1);
+			my_move = true;
+			break;
+		case 'B':
+			p = new SmartPlayer(Player::Player2);
+			my_move = false;
+			break;
+		default:
+			fprintf(stderr, "Could not parse game acept string, got %s\n", buff);
+			DO_RETURN
+	}
+
+	// Main game loop
+	do {
+		if(getline(&buff, &len, m_sock_ffd) == -1) {
+			perror("Reading game move");
+			DO_RETURN;
+		}
+
+	} while(buff[0] == '!' || buff[0] == '?');
+
+	if(buff[0] == '!') {
+		printf("%s", buff);
+		if(buff[3] == color) {
+			printf("You win!\n");
+		} else {
+			printf("You lose!\n");
+		}
+	} else {
+		fprintf(stderr, "Game ended due to error condition.\n");
+		fprintf(stderr, "error line was %s\n", buff);
+	}
 }
+
+#undef DO_RETURN
+#undef SAFE_FREE
 

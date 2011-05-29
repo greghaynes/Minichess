@@ -3,6 +3,8 @@
 
 #include "player.h"
 
+#include <stdio.h>
+
 class ImcsGame
 {
 
@@ -19,6 +21,7 @@ class ImcsGame
 
 		Player *m_player;
 		int m_sock_fd;
+		FILE *m_sock_ffd;
 		bool m_valid_conn;
 
 };
