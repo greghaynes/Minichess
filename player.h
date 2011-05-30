@@ -25,7 +25,7 @@ class Player
 
 		Player::Who who(void) const;
 
-		virtual Move move(Board *board, struct timeval *time_remain) = 0;
+		virtual Move move(Board *board, struct timeval *time_remain, int move) = 0;
 
 	private:
 		Player::Who m_who;

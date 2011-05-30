@@ -28,7 +28,7 @@ SmartPlayer::SmartPlayer(Player::Who whoami)
 
 static unsigned char negamax_cur_depth;
 
-Move SmartPlayer::move(Board *b, struct timeval *time_remain)
+Move SmartPlayer::move(Board *b, struct timeval *time_remain, int move)
 {
 	int i;
 	float alpha, beta;

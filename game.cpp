@@ -148,7 +148,11 @@ bool Game::movePlayer(Player::Who who, bool subtract_time)
 
 	// Perform move
 	gettimeofday(&tv_start, 0);
-	mv = m_players[ndxFromPlayer(who)]->move(m_board, &tv_rem);
+	mv = m_players[ndxFromPlayer(who)]->move(m_board, &tv_rem, 0);
+
+	std::cout << (char)('A'+mv.from().x()) << 6 - mv.from().y() << '-';
+	std::cout << (char)('A'+mv.to().x()) << 6 - mv.to().y() << std::endl;
+
 	if(!mv.isValid())
 		return false;
 

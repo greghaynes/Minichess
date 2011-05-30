@@ -21,7 +21,7 @@ RandomPlayer::RandomPlayer(Player::Who who)
 	init();
 }
 
-Move RandomPlayer::move(Board *b, struct timeval *time_remain)
+Move RandomPlayer::move(Board *b, struct timeval *time_remain, int move_num)
 {
 	std::list<Move> moves;
 	b->validMoves(who(), moves);

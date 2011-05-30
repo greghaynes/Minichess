@@ -25,7 +25,7 @@ void printWinner(const Board &b)
 }
 
 
-#if 1
+#if 0
 int main(int argc, char **argv)
 {
 	ImcsGame g;
@@ -36,11 +36,11 @@ int main(int argc, char **argv)
 }
 #endif
 
-#if 0
+#if 1
 int main(int argc, char **argv)
 {
 	Game g(BoardGenerator::matchStart());
-	g.setPlayer(new RandomPlayer(Player::Player2));
+	g.setPlayer(new HumanPlayer(Player::Player2));
 	g.setPlayer(new SmartPlayer(Player::Player1));
 	g.play();
 	printWinner(*g.board());

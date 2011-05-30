@@ -11,7 +11,7 @@ class RandomPlayer
 		RandomPlayer(void);
 		RandomPlayer(Player::Who who);
 
-		Move move(Board *b, struct timeval *time_remain);
+		Move move(Board *b, struct timeval *time_remain, int move_num);
 
 	private:
 		void init(void);

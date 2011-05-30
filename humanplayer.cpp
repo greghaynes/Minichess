@@ -23,7 +23,7 @@ HumanPlayer::HumanPlayer(Player::Who who)
 	init();
 }
 
-Move HumanPlayer::move(Board *b, struct timeval *time_remain)
+Move HumanPlayer::move(Board *b, struct timeval *time_remain, int move_num)
 {
 	Move mv;
 	std::list<Move> validMoves;
@@ -39,8 +39,8 @@ Move HumanPlayer::move(Board *b, struct timeval *time_remain)
 		std::cin.getline(input, 10);
 		rows[0] = input[0] - 'A';
 		rows[1] = input[3] - 'A';
-		cols[0] = input[1] - '1';
-		cols[1] = input[4] - '1';
+		cols[0] = 7 - input[1] - '1';
+		cols[1] = 7 - input[4] - '1';
 		mv = Move(Location(rows[0], cols[0]), Location(rows[1], cols[1]));
 
 		b->validMoves(who(), validMoves);

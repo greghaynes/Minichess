@@ -46,9 +46,9 @@ Board *BoardGenerator::fromString(const char *str)
 		}
 
 		if(*itr == ch) // is lower
-			player = Player::Player1;
-		else
 			player = Player::Player2;
+		else
+			player = Player::Player1;
 
 		b->set(Location(x, y), BoardSlot(player, piece));
 	}

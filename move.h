@@ -3,6 +3,8 @@
 
 #include "location.h"
 
+#include <string.h>
+
 class Move
 {
 

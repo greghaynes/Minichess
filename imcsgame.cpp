@@ -1,5 +1,8 @@
 #include "imcsgame.h"
 #include "smartplayer.h"
+#include "boardgenerator.h"
+
+#include <iostream>
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -159,8 +162,9 @@ void ImcsGame::play(const char *username, const char *pass, char piece)
 
 #undef DO_RETURN
 #define DO_RETURN SAFE_FREE(buff)\
-                     SAFE_FREE(p)\
-                     return;
+                  SAFE_FREE(p)\
+                  SAFE_FREE(b)\
+                  return;
 
 void ImcsGame::startPlaying(void)
 {
@@ -169,8 +173,10 @@ void ImcsGame::startPlaying(void)
 	int game_id;
 	size_t len;
 	int w_min, w_sec, b_min, b_sec;
+	int move_num;
 	char color;
 	Player *p = 0;
+	Board *b = 0;
 	bool my_move = false;
 
 	printf("Waiting for game acceptance...\n");
@@ -201,13 +207,78 @@ void ImcsGame::startPlaying(void)
 			DO_RETURN
 	}
 
+	char move_color;
+	char board[37];
+	int board_ndx;
+	std::string *str;
+	struct timeval time;
+	Move mv;
 	// Main game loop
 	do {
+		// Kill leading blank line
+		do {
+			if(getline(&buff, &len, m_sock_ffd) == -1) {
+				perror("Reading move leading blank line");
+				DO_RETURN
+			}
+		} while(!isspace(buff[0]));
+
+		
+		// Read in moe num / color line
 		if(getline(&buff, &len, m_sock_ffd) == -1) {
-			perror("Reading game move");
-			DO_RETURN;
+			perror("Reading move info line");
+			DO_RETURN
+		}
+		sscanf(buff, "%d %c", &move_num, &move_color);
+
+		// Read in board
+		board_ndx = 0;
+		do {
+			if(getline(&buff, &len, m_sock_ffd) == -1) {
+				perror("Reading move leading blank line");
+				DO_RETURN
+			}
+
+			if(board_ndx < 36) {
+				strncpy(&board[board_ndx], buff, 5);
+				board_ndx += 5;
+				board[board_ndx] = '\n';
+				board_ndx++;
+				board[board_ndx] = '\0';
+			}
+		} while(!isspace(buff[0]));
+		if(board_ndx != 36) {
+			fprintf(stderr, "Did not read in valid board.\n");
+			DO_RETURN
 		}
 
+		b = BoardGenerator::fromString(board);
+
+		printf("Move: %d\n", move_num);
+		str = b->toString();
+		std::cout << str << std::endl;
+		delete str;
+
+		// Kill trailing blank line
+		if(getline(&buff, &len, m_sock_ffd) == -1) {
+			perror("Reading move trailing blank line");
+			DO_RETURN
+		}
+
+		if(getline(&buff, &len, m_sock_ffd) == -1) {
+			perror("Reading move / time line");
+			DO_RETURN
+		}
+
+		sscanf(buff, "? %d:%d %d:%d", &w_min, &w_sec, &b_min, &b_sec);
+		if(color == 'W')
+			time.tv_sec = (w_min * 60) + w_sec;
+		else
+			time.tv_sec = (b_min * 60) + b_sec;
+
+		mv = m_player->move(b, &time, move_num);
+
+		delete b;
 	} while(buff[0] == '!' || buff[0] == '?');
 
 	if(buff[0] == '!') {
