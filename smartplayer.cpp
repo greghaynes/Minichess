@@ -7,14 +7,26 @@
 #include <numeric>
 
 #include <sys/time.h>
+#include <signal.h>
+#include <unistd.h>
 
 static Move negamax_move;
 static bool has_srand;
 static unsigned char cur_move_num;
+static int alrm_secs;
+
+static bool keep_searching;
+
+void alarm_hdlr(int signal) {
+	++alrm_secs;
+	alarm(1);
+}
 
 SmartPlayer::SmartPlayer(void)
 	: Player()
 {
+	signal(SIGALRM, alarm_hdlr);
+	alarm(1);
 	if(who() == Player::Player2)
 		cur_move_num = 1;
 }
@@ -22,26 +34,38 @@ SmartPlayer::SmartPlayer(void)
 SmartPlayer::SmartPlayer(Player::Who whoami)
 	: Player(whoami)
 {
+	signal(SIGALRM, alarm_hdlr);
+	alarm(1);
 	if(who() == Player::Player2)
 		cur_move_num = 1;
 }
 
 static unsigned char negamax_cur_depth;
+static bool negamax_complete;
+static int end_secs;
 
 Move SmartPlayer::move(Board *b, struct timeval *time_remain, int move)
 {
 	int i;
 	float alpha, beta;
-	for(i=3;i<7;i++)
+	end_secs = alrm_secs + (time_remain->tv_sec / (80 - cur_move_num)) + 1;
+	Move complete_mv;
+	negamax_complete = true;
+	for(i=1;i<100&&negamax_complete;i++)
 	{
 		alpha = -CFG_INFINITY;
 		beta = CFG_INFINITY;
-		if(negamax(b, who(), i, Move(), alpha, beta) == CFG_GAMEVAL_WIN)
+		negamax_complete = true;
+		if(negamax(b, who(), i, Move(), alpha, beta) == CFG_GAMEVAL_WIN && negamax_complete) {
+			cur_move_num += 2;
 			return negamax_move;
+		}
+		if(negamax_complete)
+			complete_mv = negamax_move;
 	}
 
 	cur_move_num += 2;
-	return negamax_move;
+	return complete_mv;
 }
 
 float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Move &move, float alpha, float beta)
@@ -52,6 +76,11 @@ float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Mo
 	float max_score = CFG_GAMEVAL_LOSE;
 
 	negamax_cur_depth++;
+
+	if(alrm_secs >= end_secs) {
+		negamax_complete = false;
+		return CFG_GAMEVAL_LOSE;
+	}
 
 	// Check for end state
 	if(b->winner() != Player::None) {

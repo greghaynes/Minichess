@@ -172,7 +172,7 @@ void ImcsGame::startPlaying(void)
 	char *itr, *end;
 	int game_id;
 	size_t len;
-	int w_min, w_sec, b_min, b_sec;
+	float w_min, w_sec, b_min, b_sec;
 	int move_num;
 	char color;
 	Player *p = 0;
@@ -186,7 +186,7 @@ void ImcsGame::startPlaying(void)
 		DO_RETURN
         }
 	
-	if(EOF == sscanf(buff, "%d %c %d:%d %d:%d", &game_id, &color, &w_min, &w_sec, &b_min, &b_sec)) {
+	if(EOF == sscanf(buff, "%d %c %f:%f %f:%f", &game_id, &color, &w_min, &w_sec, &b_min, &b_sec)) {
 		perror("Parsing game accepted id string");
 		DO_RETURN
 	}
@@ -224,7 +224,7 @@ void ImcsGame::startPlaying(void)
 		} while(!isspace(buff[0]));
 
 		
-		// Read in moe num / color line
+		// Read in move num / color line
 		if(getline(&buff, &len, m_sock_ffd) == -1) {
 			perror("Reading move info line");
 			DO_RETURN
@@ -235,7 +235,8 @@ void ImcsGame::startPlaying(void)
 		board_ndx = 0;
 		do {
 			if(getline(&buff, &len, m_sock_ffd) == -1) {
-				perror("Reading move leading blank line");
+				fprintf(stderr, "Reading move leading blank line");
+				fprintf(stderr, "Got %s\n", buff);
 				DO_RETURN
 			}
 
@@ -256,34 +257,49 @@ void ImcsGame::startPlaying(void)
 
 		printf("Move: %d\n", move_num);
 		str = b->toString();
-		std::cout << str << std::endl;
+		printf("%s\n", str->c_str());
 		delete str;
-
-		// Kill trailing blank line
-		if(getline(&buff, &len, m_sock_ffd) == -1) {
-			perror("Reading move trailing blank line");
-			DO_RETURN
-		}
 
 		if(getline(&buff, &len, m_sock_ffd) == -1) {
 			perror("Reading move / time line");
 			DO_RETURN
 		}
 
-		sscanf(buff, "? %d:%d %d:%d", &w_min, &w_sec, &b_min, &b_sec);
+		sscanf(buff, "? %f:%f %f:%f", &w_min, &w_sec, &b_min, &b_sec);
 		if(color == 'W')
 			time.tv_sec = (w_min * 60) + w_sec;
 		else
 			time.tv_sec = (b_min * 60) + b_sec;
 
-		mv = m_player->move(b, &time, move_num);
+		printf("%f:%f %f:%f", w_min, w_sec, b_min, b_sec);
+		mv = p->move(b, &time, move_num);
+		sprintf(buff, "%c%c-%c%c\n", (char)('a'+mv.from().x()), (char)('6'-mv.from().y()),
+		                             (char)('a'+mv.to().x()), (char)('6'-mv.to().y()));
+		printf("%s\n", buff);
+		b->move(mv);
+		printf("Move: %d\n", move_num);
+		str = b->toString();
+		printf("%s\n", str->c_str());
+		delete str;
+		
+		if(write(m_sock_fd, buff, strlen(buff)) == -1) {
+			perror("Sending move");
+			DO_RETURN
+		}
 
 		delete b;
-	} while(buff[0] == '!' || buff[0] == '?');
+		b = 0;
 
-	if(buff[0] == '!') {
+		if(getline(&buff, &len, m_sock_ffd) == -1) {
+			perror("reading opponent move");
+			DO_RETURN
+		}
+	} while(buff[0] != '-' && buff[0] != '=');
+	// End main game loop
+
+	if(buff[0] == '=') {
 		printf("%s", buff);
-		if(buff[3] == color) {
+		if(buff[2] == color) {
 			printf("You win!\n");
 		} else {
 			printf("You lose!\n");
