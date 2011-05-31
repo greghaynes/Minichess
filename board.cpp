@@ -10,6 +10,8 @@ Board::Board(void)
 	, m_pop_count(0)
 	, m_zobrist_key(0)
 {
+	pawn_dists[0] = 0;
+	pawn_dists[1] = 1;
 	int i, j;
 	for(i = 0;i<CFG_BOARD_WIDTH;++i)
 	{
@@ -23,6 +25,8 @@ Board::Board(const Board &other)
 	, m_pop_count(other.populationCount(Player::Player1))
 	, m_zobrist_key(other.zobristKey())
 {
+	pawn_dists[0] = other.pawnDist(Player::Player1);
+	pawn_dists[1] = other.pawnDist(Player::Player2);
 	memcpy(m_board, other.get(Location(0, 0)), sizeof(BoardSlot)*CFG_BOARD_WIDTH*CFG_BOARD_HEIGHT);
 }
 
@@ -58,8 +62,8 @@ void Board::set(const Location &l, const BoardSlot &p)
 {
 
 	// Update key
-//	Zobrist::key(*get(l), l, m_zobrist_key);
-//	Zobrist::key(p, l, m_zobrist_key);
+	Zobrist::key(*get(l), l, m_zobrist_key);
+	Zobrist::key(p, l, m_zobrist_key);
 
 	if(!isValidLocation(l))
 		return;
@@ -179,6 +183,11 @@ void Board::setPopulationCount(int value)
 uint64_t Board::zobristKey(void) const
 {
 	return m_zobrist_key;
+}
+
+int Board::pawnDist(Player::Who player) const
+{
+	return pawn_dists[player-1];
 }
 
 bool Board::isValidLocation(const Location &l) const

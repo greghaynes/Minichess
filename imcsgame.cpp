@@ -125,7 +125,16 @@ void ImcsGame::play(const char *username, const char *pass, char piece)
 			perror("Reading from imcs second time after list request");
 			DO_RETURN
 		}
-		if(buff[0] != '.') {
+		while(buff[0] != '.') {
+			// Dont try to join in progress game
+			if(!strstr(buff, "offer")) {
+				if(getline(&buff, &len, m_sock_ffd) == -1) {
+					perror("Reading from imcs second time after list request");
+					DO_RETURN
+				}
+				continue;
+			}
+
 			sscanf(buff, " %d", &game_id);
 			printf("Found game %d, accepting\n", game_id);
 			sprintf(buff_2, "accept %d\n", game_id);
@@ -144,9 +153,8 @@ void ImcsGame::play(const char *username, const char *pass, char piece)
 
 			startPlaying();
 			DO_RETURN
-		} else {
-			printf("No available games found.\n");
 		}
+		printf("No available games found.\n");
 	}
 	
 	printf("Offering game\n");
@@ -218,7 +226,7 @@ void ImcsGame::startPlaying(void)
 		// Kill leading blank line
 		do {
 			if(getline(&buff, &len, m_sock_ffd) == -1) {
-				perror("Reading move leading blank line");
+				printf("Reading move leading blank line\ngot: %s", buff);
 				DO_RETURN
 			}
 		} while(!isspace(buff[0]));
@@ -271,7 +279,7 @@ void ImcsGame::startPlaying(void)
 		else
 			time.tv_sec = (b_min * 60) + b_sec;
 
-		printf("%f:%f %f:%f", w_min, w_sec, b_min, b_sec);
+		printf("%f:%f %f:%f\n", w_min, w_sec, b_min, b_sec);
 		mv = p->move(b, &time, move_num);
 		sprintf(buff, "%c%c-%c%c\n", (char)('a'+mv.from().x()), (char)('6'-mv.from().y()),
 		                             (char)('a'+mv.to().x()), (char)('6'-mv.to().y()));
@@ -294,12 +302,19 @@ void ImcsGame::startPlaying(void)
 			perror("reading opponent move");
 			DO_RETURN
 		}
-	} while(buff[0] != '-' && buff[0] != '=');
+
+	} while(buff[0] != '-' && strncmp(buff, "232", 3) && strncmp(buff, "231", 3));
 	// End main game loop
 
-	if(buff[0] == '=') {
-		printf("%s", buff);
-		if(buff[2] == color) {
+	printf("%s\n", buff);
+	if(!strncmp(buff, "232", 3)) {
+		if(color == 'B') {
+			printf("You win!\n");
+		} else {
+			printf("You lose!\n");
+		}
+	} else if(!strncmp(buff, "231", 3)) {
+		if(color == 'W') {
 			printf("You win!\n");
 		} else {
 			printf("You lose!\n");

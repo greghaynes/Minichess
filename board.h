@@ -43,12 +43,15 @@ class Board
 
 		uint64_t zobristKey(void) const;
 
+		int pawnDist(Player::Who player) const;
+
 	private:
 		bool isValidLocation(const Location &l) const;
 
 		BoardSlot m_board[CFG_BOARD_WIDTH][CFG_BOARD_HEIGHT];
 		Player::Who m_winner;
 		char m_pop_count;
+		unsigned char pawn_dists[2];
 		uint64_t m_zobrist_key;
 
 };

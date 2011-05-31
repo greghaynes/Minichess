@@ -26,7 +26,7 @@ SmartPlayer::SmartPlayer(void)
 	: Player()
 {
 	signal(SIGALRM, alarm_hdlr);
-	alarm(1);
+	alarm_hdlr(0);
 	if(who() == Player::Player2)
 		cur_move_num = 1;
 }
@@ -35,7 +35,7 @@ SmartPlayer::SmartPlayer(Player::Who whoami)
 	: Player(whoami)
 {
 	signal(SIGALRM, alarm_hdlr);
-	alarm(1);
+	alarm_hdlr(0);
 	if(who() == Player::Player2)
 		cur_move_num = 1;
 }
@@ -48,10 +48,13 @@ Move SmartPlayer::move(Board *b, struct timeval *time_remain, int move)
 {
 	int i;
 	float alpha, beta;
-	end_secs = alrm_secs + (time_remain->tv_sec / (80 - cur_move_num)) + 1;
+	end_secs = alrm_secs + (time_remain->tv_sec / (42 - move));
+	if(end_secs == alrm_secs)
+		end_secs += 2;
 	Move complete_mv;
+
 	negamax_complete = true;
-	for(i=1;i<100&&negamax_complete;i++)
+	for(i=3;i<100&&negamax_complete;i++)
 	{
 		alpha = -CFG_INFINITY;
 		beta = CFG_INFINITY;
@@ -65,6 +68,8 @@ Move SmartPlayer::move(Board *b, struct timeval *time_remain, int move)
 	}
 
 	cur_move_num += 2;
+	if(!complete_mv.isValid())
+		std::cout << "Could not find valid move. Time: " << alrm_secs + (time_remain->tv_sec / (41 - move)) << "\n";
 	return complete_mv;
 }
 
@@ -86,18 +91,23 @@ float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Mo
 	if(b->winner() != Player::None) {
 		if(b->winner() == cur_player) {
 			negamax_move = move;
+#if USE_TTABLE
 			m_tt.insert(*b, CFG_GAMEVAL_WIN, alpha, beta, cur_move_num + negamax_cur_depth); 
+#endif
 			negamax_cur_depth--;
 			return CFG_GAMEVAL_WIN;
 		} else {
 			negamax_move = move;
+#if USE_TTABLE
 			m_tt.insert(*b, CFG_GAMEVAL_LOSE, alpha, beta, cur_move_num + negamax_cur_depth); 
+#endif
 			negamax_cur_depth--;
 			return CFG_GAMEVAL_LOSE;
 		}
 	}
 
 	// Check for TT hit
+#if USE_TTABLE
 	BoardTTEntry *tt_entry;
 	m_tt.getUsableEntry(*b, cur_move_num + negamax_cur_depth + depth, alpha, beta, &tt_entry);
 	if(tt_entry) {
@@ -105,12 +115,16 @@ float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Mo
 		negamax_move = move;
 		return tt_entry->negamax;
 	}
+#endif
 
 	// Check for max depth
 	if(depth == 0) {
 		negamax_move = Move();
 		max_score = boardEval(b, cur_player, moves);
+		max_score += depth / 100.0;
+#if USE_TTABLE
 		m_tt.insert(*b, max_score, alpha, beta, cur_move_num + negamax_cur_depth); 
+#endif
 		negamax_cur_depth--;
 		return max_score;
 	}
@@ -122,7 +136,9 @@ float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Mo
 	// No movew -> Draw
 	if(moves.size() == 0) {
 		std::cout << "No moves!\n";
+#if USE_TTABLE
 		m_tt.insert(*b, CFG_GAMEVAL_LOSE, alpha, beta, cur_move_num + negamax_cur_depth); 
+#endif
 		negamax_cur_depth--;
 		negamax_move = Move();
 		return CFG_GAMEVAL_LOSE;
@@ -173,7 +189,9 @@ float SmartPlayer::negamax(Board *b, Player::Who cur_player, int depth, const Mo
 	}
 
 	negamax_move = best_move;
+#if USE_TTABLE
 	m_tt.insert(*b, max_score, alpha, beta, cur_move_num + negamax_cur_depth); 
+#endif
 	negamax_cur_depth--;
 	return max_score;
 }
